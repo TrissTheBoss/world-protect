@@ -1,0 +1,107 @@
+name: ${pluginName}
+version: ${pluginVersion}
+description: ${pluginDescription}
+author: ${pluginAuthor}
+website: ${pluginWebsite}
+
+main: com.worldprotect.WorldProtectPlugin
+api-version: '1.17'
+
+depend: []
+softdepend: [ 'Vault', 'WorldEdit', 'PlaceholderAPI' ]
+
+commands:
+  wp:
+    description: Main World Protect command
+    usage: /<command> <subcommand> [args]
+    aliases: [ worldprotect, protect ]
+    permission: worldprotect.use
+
+permissions:
+  worldprotect.admin:
+    description: Full administrative access to all World Protect features
+    default: op
+    children:
+      worldprotect.*: true
+  
+  worldprotect.*:
+    description: Wildcard for all World Protect permissions
+    default: op
+  
+  worldprotect.use:
+    description: Basic permission to use World Protect commands
+    default: true
+    children:
+      worldprotect.help: true
+      worldprotect.version: true
+      worldprotect.info: true
+      worldprotect.list: true
+  
+  worldprotect.help:
+    description: Access to help command
+    default: true
+  
+  worldprotect.version:
+    description: Access to version command
+    default: true
+  
+  worldprotect.wand:
+    description: Use selection wand
+    default: op
+  
+  worldprotect.create:
+    description: Create regions
+    default: op
+  
+  worldprotect.delete:
+    description: Delete own regions
+    default: op
+  
+  worldprotect.delete.others:
+    description: Delete any region
+    default: op
+  
+  worldprotect.flag:
+    description: Set region flags
+    default: op
+  
+  worldprotect.info:
+    description: View region information
+    default: true
+  
+  worldprotect.list:
+    description: List regions
+    default: true
+  
+  worldprotect.select:
+    description: Use selection commands
+    default: op
+  
+  worldprotect.reload:
+    description: Reload configuration
+    default: op
+  
+  worldprotect.debug:
+    description: Use debug commands
+    default: op
+  
+  worldprotect.bypass:
+    description: Bypass all region protections
+    default: op
+
+# Plugin libraries
+libraries:
+  - dev.dejvokep:boosted-yaml:1.3.4
+
+# Folia support
+folia-supported: true
+
+# Plugin metrics (bStats)
+metrics:
+  enabled: true
+  plugin-id: 00000  # TODO: Set actual bStats ID
+
+# Update checker
+updater:
+  enabled: true
+  channel: release

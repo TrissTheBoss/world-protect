@@ -1,0 +1,220 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        java: [ '17', '21' ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for Git operations
+    
+    - name: Setup Java ${{ matrix.java }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java }}
+        distribution: 'temurin'
+        cache: 'gradle'
+    
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.5'
+    
+    - name: Validate Gradle Wrapper
+      uses: gradle/wrapper-validation-action@v1
+    
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    - name: Build with Gradle
+      run: ./gradlew build --no-daemon --stacktrace
+    
+    - name: Run tests
+      run: ./gradlew test --no-daemon --stacktrace
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-java-${{ matrix.java }}
+        path: build/reports/tests/test/
+    
+    - name: Upload build artifacts
+      if: success() && matrix.java == '17'  # Only upload from Java 17 build
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: |
+          build/libs/*.jar
+          !build/libs/*-dev.jar
+          !build/libs/*-sources.jar
+          !build/libs/*-javadoc.jar
+    
+    - name: Generate JaCoCo report
+      if: success()
+      run: ./gradlew jacocoTestReport --no-daemon
+    
+    - name: Upload coverage report
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report-java-${{ matrix.java }}
+        path: build/reports/jacoco/test/html/
+  
+  quality:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Java 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Run code quality checks
+      run: ./gradlew check --no-daemon --stacktrace
+    
+    - name: Check documentation links
+      run: |
+        # Simple documentation validation
+        echo "Checking documentation structure..."
+        find docs/ -name "*.md" -type f | wc -l
+        echo "Documentation files found."
+    
+    - name: Validate plugin.yml
+      run: |
+        # Check if plugin.yml exists and has required fields
+        if [ -f "src/main/resources/plugin.yml" ]; then
+          echo "plugin.yml exists"
+          # Add more validation as needed
+        else
+          echo "Warning: plugin.yml not found"
+        fi
+  
+  release:
+    runs-on: ubuntu-latest
+    needs: [build, quality]
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Java 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+    
+    - name: Extract version from tag
+      id: get_version
+      run: |
+        VERSION="${GITHUB_REF#refs/tags/v}"
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Building version: ${VERSION}"
+    
+    - name: Update version in gradle.properties
+      run: |
+        sed -i "s/pluginVersion=.*/pluginVersion=${{ steps.get_version.outputs.VERSION }}/" gradle.properties
+        sed -i "s/version=.*/version=${{ steps.get_version.outputs.VERSION }}/" gradle.properties
+    
+    - name: Build release artifacts
+      run: ./gradlew clean shadowJar sourcesJar javadocJar --no-daemon --stacktrace
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          build/libs/WorldProtect-${{ steps.get_version.outputs.VERSION }}.jar
+          build/libs/WorldProtect-${{ steps.get_version.outputs.VERSION }}-sources.jar
+          build/libs/WorldProtect-${{ steps.get_version.outputs.VERSION }}-javadoc.jar
+        generate_release_notes: true
+        draft: false
+        prerelease: ${{ contains(steps.get_version.outputs.VERSION, '-') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Publish to Maven Central (TODO)
+      if: false  # Disabled until configured
+      run: |
+        echo "TODO: Configure Maven Central publishing"
+        # ./gradlew publish
+
+  documentation:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Python for documentation tools
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install documentation tools
+      run: |
+        pip install markdown-link-check
+    
+    - name: Check Markdown links
+      run: |
+        find . -name "*.md" -type f | xargs -I {} markdown-link-check -c .github/markdown-link-check-config.json {} || true
+    
+    - name: Generate documentation statistics
+      run: |
+        echo "## Documentation Statistics" >> $GITHUB_STEP_SUMMARY
+        echo "- Total Markdown files: $(find docs/ -name "*.md" -type f | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- Total lines of documentation: $(find docs/ -name "*.md" -type f -exec wc -l {} + | tail -1 | awk '{print $1}')" >> $GITHUB_STEP_SUMMARY
+        echo "- Last updated: $(date)" >> $GITHUB_STEP_SUMMARY
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build, quality, documentation]
+    if: always()
+    
+    steps:
+    - name: Send notification on failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { owner, repo } = context.repo;
+          const runId = context.runId;
+          const workflow = context.workflow;
+          
+          github.rest.issues.create({
+            owner,
+            repo,
+            title: `Build failed in ${workflow}`,
+            body: `Build #${runId} failed. Check the [workflow run](${context.serverUrl}/${owner}/${repo}/actions/runs/${runId}) for details.`,
+            labels: ['build-failure']
+          });

@@ -1,0 +1,94 @@
+# Gradle
+.gradle/
+build/
+out/
+bin/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+run/
+*.lock
+
+# Minecraft/Server
+world*/
+plugins/
+cache/
+libraries/
+versions/
+server.properties
+bukkit.yml
+spigot.yml
+paper-world-defaults.yml
+eula.txt
+
+# Build outputs
+*.jar
+!build/libs/*.jar
+
+# Dependency caching
+.cache/
+
+# Test outputs
+test-results/
+coverage/
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files
+tmp/
+temp/
+
+# Documentation
+_site/
+.sass-cache/
+.jekyll-cache/
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+
+# Development files
+*.swp
+*.swo
+*~
+
+# Gradle Wrapper
+!gradle/wrapper/gradle-wrapper.jar
+
+# Paperweight
+paperweight.json
+paperweight-mappings.json

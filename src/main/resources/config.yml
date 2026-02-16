@@ -1,0 +1,182 @@
+# World Protect Configuration
+# This file contains all plugin settings and defaults.
+
+plugin:
+  # Debug and logging
+  debug: false
+  log-level: "INFO" # DEBUG, INFO, WARN, ERROR
+  
+  # Update checking
+  update-checker: true
+  auto-download-updates: false
+  
+  # Metrics (bStats)
+  metrics: true
+  metrics-id: 00000 # TODO: Set actual bStats ID
+
+regions:
+  # Region limits
+  max-regions-per-player: 10
+  max-region-volume: 1000000 # blocks
+  min-region-volume: 1
+  
+  # Region naming
+  name-regex: "^[a-zA-Z0-9_-]{1,64}$"
+  reserved-names:
+    - "global"
+    - "default"
+    - "world"
+    - "all"
+  
+  # Selection tool
+  selection-wand: "golden_axe"
+  selection-particle: "VILLAGER_HAPPY"
+  selection-color: "GREEN"
+  
+  # Visual feedback
+  show-boundaries: true
+  boundary-particle: "REDSTONE"
+  boundary-interval: 20 # ticks
+  boundary-color: "BLUE"
+  
+  # Priority system
+  default-priority: 0
+  max-priority: 1000
+
+flags:
+  # Default flag values (applied to all new regions)
+  defaults:
+    block-break: "deny"
+    block-place: "deny"
+    pvp: "deny"
+    entry: "allow"
+    mob-spawning: "deny"
+    explosions: "deny"
+    fire-spread: "deny"
+    container-access: "deny"
+  
+  # Flag aliases (shortcuts for multiple flags)
+  aliases:
+    build: [ "block-break", "block-place" ]
+    protect: [ "block-break", "block-place", "pvp" ]
+    safe: [ "block-break", "block-place", "pvp", "mob-spawning" ]
+    public: [ "entry:allow", "block-break:deny", "block-place:deny" ]
+  
+  # Flag inheritance
+  inheritance-enabled: true
+  inheritance-depth: 5 # Maximum inheritance levels
+
+storage:
+  # Storage backend (sqlite, mysql, h2, yaml)
+  type: "sqlite"
+  
+  # SQLite settings
+  sqlite:
+    file: "plugins/WorldProtect/regions.db"
+    pool-size: 10
+    
+  # MySQL settings
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "worldprotect"
+    username: "minecraft"
+    password: "password"
+    pool-size: 20
+    connection-timeout: 30000
+    idle-timeout: 600000
+    
+  # Caching
+  cache:
+    enabled: true
+    size: 1000
+    expire-after-write: 300 # seconds
+    expire-after-access: 60 # seconds
+
+performance:
+  # Event processing
+  async-event-processing: true
+  event-priority: "NORMAL" # LOWEST, LOW, NORMAL, HIGH, HIGHEST, MONITOR
+  
+  # Caching
+  region-cache-size: 1000
+  flag-cache-size: 5000
+  
+  # Spatial indexing
+  spatial-index-type: "grid" # grid, rtree, quadtree
+  grid-cell-size: 16 # chunks
+  
+  # Thread pool
+  thread-pool-size: 4
+  max-queue-size: 1000
+
+worlds:
+  # Per-world defaults
+  defaults:
+    enabled: true
+    priority: 0
+    
+  # World-specific overrides
+  overrides:
+    world_nether:
+      flags:
+        pvp: "allow"
+        fire-spread: "allow"
+    world_the_end:
+      flags:
+        dragon-fight: "allow"
+
+messages:
+  # Message format
+  prefix: "&8[&3WorldProtect&8]&r"
+  error-prefix: "&c✗&r"
+  success-prefix: "&a✓&r"
+  info-prefix: "&7ℹ&r"
+  
+  # Color codes
+  primary: "&3"
+  secondary: "&7"
+  accent: "&6"
+  error: "&c"
+  success: "&a"
+
+# API settings
+api:
+  enabled: true
+  version: "1.0"
+  
+  # Hook settings
+  hooks:
+    worldedit:
+      enabled: true
+      selection-integration: true
+      
+    vault:
+      enabled: true
+      economy-integration: true
+      permission-integration: true
+      
+    placeholderapi:
+      enabled: true
+      placeholders: true
+
+# Backup settings
+backup:
+  enabled: true
+  interval: 86400 # seconds (24 hours)
+  keep-backups: 7
+  compression: true
+  format: "zip" # zip, tar, tar.gz
+
+# Development settings (only used in debug mode)
+development:
+  # Test mode
+  test-mode: false
+  
+  # Mock data
+  generate-test-regions: false
+  test-region-count: 10
+  
+  # Performance profiling
+  enable-profiling: false
+  profile-interval: 60 # seconds
