@@ -1,7 +1,7 @@
 # World Protect
 
-[![GitHub License](https://img.shields.io/github/license/yourusername/WorldProtect)](https://github.com/yourusername/WorldProtect/blob/main/LICENSE)
-[![Build Status](https://github.com/yourusername/WorldProtect/actions/workflows/build.yml/badge.svg)](https://github.com/yourusername/WorldProtect/actions/workflows/build.yml)
+[![GitHub License](https://img.shields.io/github/license/TrissTheBoss/world-protect)](https://github.com/TrissTheBoss/world-protect/blob/main/LICENSE)
+[![Build Status](https://github.com/TrissTheBoss/world-protect/actions/workflows/build.yml/badge.svg)](https://github.com/TrissTheBoss/world-protect/actions/workflows/build.yml)
 [![Paper Version](https://img.shields.io/badge/Paper-1.20.4-blue)](https://papermc.io)
 [![Java Version](https://img.shields.io/badge/Java-17+-orange)](https://adoptium.net)
 
@@ -26,7 +26,7 @@
 - 100MB free disk space for region data
 
 ### Installation
-1. Download the latest `WorldProtect.jar` from [Releases](https://github.com/yourusername/WorldProtect/releases)
+1. Download the latest `WorldProtect.jar` from [Releases](https://github.com/TrissTheBoss/world-protect/releases)
 2. Place it in your server's `plugins/` directory
 3. Restart your server
 4. Configure regions using in-game commands or edit `plugins/WorldProtect/config.yml`
@@ -123,5 +123,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Need Help?**
 - Check the [documentation](docs/)
-- Open an [issue](https://github.com/yourusername/WorldProtect/issues)
+- Open an [issue](https://github.com/TrissTheBoss/world-protect/issues)
 - Join our Discord (link coming soon)
