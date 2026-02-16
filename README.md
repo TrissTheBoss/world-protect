@@ -2,7 +2,7 @@
 
 [![GitHub License](https://img.shields.io/github/license/TrissTheBoss/world-protect)](https://github.com/TrissTheBoss/world-protect/blob/main/LICENSE)
 [![Build Status](https://github.com/TrissTheBoss/world-protect/actions/workflows/build.yml/badge.svg)](https://github.com/TrissTheBoss/world-protect/actions/workflows/build.yml)
-[![Paper Version](https://img.shields.io/badge/Paper-1.21.4-blue)](https://papermc.io)
+[![Paper Version](https://img.shields.io/badge/Paper-1.21.11-blue)](https://papermc.io)
 [![Java Version](https://img.shields.io/badge/Java-17+-orange)](https://adoptium.net)
 
 **World Protect** is a modern, high-performance world protection plugin for Minecraft Paper/Folia servers. It provides granular region-based protection with a comprehensive flag system, intuitive selection tools, and full Folia compatibility.
