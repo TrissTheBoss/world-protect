@@ -205,7 +205,7 @@ When adding or modifying:
 
 ## Environment
 - World Protect Version: [e.g., 1.0.0]
-- Server Software: [e.g., Paper 1.20.4]
+- Server Software: [e.g., Paper 1.21.4]
 - Java Version: [e.g., 17.0.9]
 - OS: [e.g., Ubuntu 22.04]
 

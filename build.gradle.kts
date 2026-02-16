@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
     
     // Configuration library (optional but recommended)
     implementation("dev.dejvokep:boosted-yaml:1.3.4")
@@ -76,7 +76,7 @@ tasks {
     }
     
     runServer {
-        minecraftVersion("1.20.4")
+        minecraftVersion("1.21.4")
     }
 }
 
