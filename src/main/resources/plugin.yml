@@ -22,71 +22,70 @@ permissions:
     description: Full administrative access to all World Protect features
     default: op
     children:
-      worldprotect.*: true
-  
-  worldprotect.*:
-    description: Wildcard for all World Protect permissions
-    default: op
+      worldprotect.use: true
+      worldprotect.command.*: true
   
   worldprotect.use:
     description: Basic permission to use World Protect commands
     default: true
     children:
-      worldprotect.help: true
-      worldprotect.version: true
-      worldprotect.info: true
-      worldprotect.list: true
+      worldprotect.command.help: true
+      worldprotect.command.version: true
+      worldprotect.command.info: true
+      worldprotect.command.list: true
+      worldprotect.command.flags: true
+      worldprotect.command.wand: true
   
-  worldprotect.help:
+  worldprotect.command.*:
+    description: Wildcard for all World Protect command permissions
+    default: op
+  
+  worldprotect.command.help:
     description: Access to help command
     default: true
   
-  worldprotect.version:
-    description: Access to version command
+  worldprotect.command.create:
+    description: Create areas
+    default: op
+  
+  worldprotect.command.delete:
+    description: Delete areas
+    default: op
+  
+  worldprotect.command.list:
+    description: List all areas
+    default: true
+  
+  worldprotect.command.info:
+    description: View area information
+    default: true
+  
+  worldprotect.command.flags:
+    description: List available flags
+    default: true
+  
+  worldprotect.command.flag:
+    description: Set area flags
+    default: op
+  
+  worldprotect.command.wand:
+    description: Get selection wand
+    default: op
+  
+  worldprotect.command.reload:
+    description: Reload plugin configuration
+    default: op
+  
+  worldprotect.command.version:
+    description: View plugin version
     default: true
   
   worldprotect.wand:
     description: Use selection wand
     default: op
   
-  worldprotect.create:
-    description: Create regions
-    default: op
-  
-  worldprotect.delete:
-    description: Delete own regions
-    default: op
-  
-  worldprotect.delete.others:
-    description: Delete any region
-    default: op
-  
-  worldprotect.flag:
-    description: Set region flags
-    default: op
-  
-  worldprotect.info:
-    description: View region information
-    default: true
-  
-  worldprotect.list:
-    description: List regions
-    default: true
-  
-  worldprotect.select:
-    description: Use selection commands
-    default: op
-  
-  worldprotect.reload:
-    description: Reload configuration
-    default: op
-  
-  worldprotect.debug:
-    description: Use debug commands
-    default: op
-  
   worldprotect.bypass:
-    description: Bypass all region protections
+    description: Bypass all area protections
     default: op
 
 # Plugin libraries

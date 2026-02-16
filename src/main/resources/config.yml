@@ -44,27 +44,83 @@ regions:
   max-priority: 1000
 
 flags:
-  # Default flag values (applied to all new regions)
+  # Default flag values (true = allow, false = deny)
   defaults:
-    block-break: "deny"
-    block-place: "deny"
-    pvp: "deny"
-    entry: "allow"
-    mob-spawning: "deny"
-    explosions: "deny"
-    fire-spread: "deny"
-    container-access: "deny"
+    # Player combat
+    pvp: false
+    
+    # Mobs & entities
+    mob-damage-players: true
+    mob-spawning: true
+    
+    # Explosions
+    tnt: true
+    creeper-explosion: true
+    ghast-fireball: true
+    
+    # Environment
+    fire-spread: true
+    lava-flow: true
+    water-flow: true
+    lightning: true
+    snow-fall: true
+    snow-melt: true
+    ice-form: true
+    ice-melt: true
+    
+    # Blocks & containers
+    block-break: true
+    block-place: true
+    use: true
+    container-access: true
+    
+    # Items & vehicles
+    item-drop: true
+    item-pickup: true
+    vehicle-place: true
+    vehicle-destroy: true
   
-  # Flag aliases (shortcuts for multiple flags)
-  aliases:
-    build: [ "block-break", "block-place" ]
-    protect: [ "block-break", "block-place", "pvp" ]
-    safe: [ "block-break", "block-place", "pvp", "mob-spawning" ]
-    public: [ "entry:allow", "block-break:deny", "block-place:deny" ]
+  # Subject group defaults (owners, members, nonmembers)
+  subject-defaults:
+    owner:
+      block-break: true
+      block-place: true
+      container-access: true
+    member:
+      block-break: true
+      block-place: true
+    nonmember:
+      block-break: false
+      block-place: false
   
-  # Flag inheritance
-  inheritance-enabled: true
-  inheritance-depth: 5 # Maximum inheritance levels
+  # Group flag configuration
+  groups:
+    environment-all:
+      - fire-spread
+      - lava-flow
+      - water-flow
+      - lightning
+      - snow-fall
+      - snow-melt
+      - ice-form
+      - ice-melt
+    explosions-all:
+      - tnt
+      - creeper-explosion
+      - ghast-fireball
+    interactions-all:
+      - container-access
+      - use
+      - item-drop
+      - item-pickup
+      - vehicle-place
+      - vehicle-destroy
+    build-all:
+      - block-break
+      - block-place
+    mob-all:
+      - mob-damage-players
+      - mob-spawning
 
 storage:
   # Storage backend (sqlite, mysql, h2, yaml)

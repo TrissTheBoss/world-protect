@@ -1,8 +1,13 @@
 package com.worldprotect;
 
+import com.worldprotect.area.AreaManager;
+import com.worldprotect.selection.SelectionManager;
+import com.worldprotect.storage.StorageManager;
+import com.worldprotect.storage.YamlStorageManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.logging.Level;
 
 /**
@@ -19,6 +24,9 @@ import java.util.logging.Level;
 public class WorldProtectPlugin extends JavaPlugin {
     
     private static WorldProtectPlugin instance;
+    private AreaManager areaManager;
+    private SelectionManager selectionManager;
+    private StorageManager storageManager;
     
     @Override
     public void onLoad() {
@@ -48,6 +56,9 @@ public class WorldProtectPlugin extends JavaPlugin {
         // Start metrics
         startMetrics();
         
+        // Load data
+        loadData();
+        
         getLogger().info("World Protect enabled successfully!");
         getLogger().info("Version: " + getDescription().getVersion());
         getLogger().info("Author: " + getDescription().getAuthors());
@@ -70,12 +81,16 @@ public class WorldProtectPlugin extends JavaPlugin {
      * Initialize plugin components.
      */
     private void initializeComponents() {
-        // TODO: Initialize core components
-        // - RegionManager
-        // - FlagManager
-        // - CommandRegistry
-        // - StorageManager
-        // - SelectionManager
+        // Initialize managers
+        this.areaManager = new AreaManager();
+        this.selectionManager = new SelectionManager();
+        
+        // Initialize storage
+        File dataFolder = new File(getDataFolder(), "areas");
+        this.storageManager = new YamlStorageManager(dataFolder);
+        
+        // Initialize storage
+        storageManager.initialize().join();
         
         getLogger().info("Components initialized");
     }
@@ -84,8 +99,10 @@ public class WorldProtectPlugin extends JavaPlugin {
      * Register plugin commands.
      */
     private void registerCommands() {
-        // TODO: Register commands
-        // - /wp command with subcommands
+        // Register main command
+        com.worldprotect.command.WorldProtectCommand mainCommand = new com.worldprotect.command.WorldProtectCommand(this);
+        getCommand("wp").setExecutor(mainCommand);
+        getCommand("wp").setTabCompleter(mainCommand);
         
         getLogger().info("Commands registered");
     }
@@ -94,11 +111,13 @@ public class WorldProtectPlugin extends JavaPlugin {
      * Register event listeners.
      */
     private void registerEvents() {
-        // TODO: Register event listeners
-        // - Block events
-        // - Entity events
-        // - Player events
-        // - World events
+        // Register selection listener
+        getServer().getPluginManager().registerEvents(
+            new com.worldprotect.listener.SelectionListener(this), this);
+        
+        // Register protection listener
+        getServer().getPluginManager().registerEvents(
+            new com.worldprotect.listener.ProtectionListener(this), this);
         
         getLogger().info("Event listeners registered");
     }
@@ -128,12 +147,28 @@ public class WorldProtectPlugin extends JavaPlugin {
     }
     
     /**
+     * Load plugin data.
+     */
+    private void loadData() {
+        getLogger().info("Loading area data...");
+        
+        storageManager.loadAllAreas().thenAccept(areas -> {
+            for (com.worldprotect.area.Area area : areas) {
+                areaManager.addArea(area);
+            }
+            getLogger().info("Loaded " + areas.size() + " areas");
+        }).join();
+    }
+    
+    /**
      * Save plugin data.
      */
     private void saveData() {
-        // TODO: Save region data
-        // - Save to database/file
-        // - Backup if configured
+        getLogger().info("Saving area data...");
+        
+        for (com.worldprotect.area.Area area : areaManager.getAllAreas()) {
+            storageManager.saveArea(area).join();
+        }
         
         getLogger().info("Data saved");
     }
@@ -142,10 +177,9 @@ public class WorldProtectPlugin extends JavaPlugin {
      * Cleanup resources.
      */
     private void cleanup() {
-        // TODO: Cleanup resources
-        // - Close database connections
-        // - Clear caches
-        // - Stop async tasks
+        if (storageManager != null) {
+            storageManager.shutdown().join();
+        }
         
         getLogger().info("Resources cleaned up");
     }
@@ -161,6 +195,36 @@ public class WorldProtectPlugin extends JavaPlugin {
             throw new IllegalStateException("WorldProtectPlugin not initialized");
         }
         return instance;
+    }
+    
+    /**
+     * Get the area manager.
+     * 
+     * @return the area manager
+     */
+    @NotNull
+    public AreaManager getAreaManager() {
+        return areaManager;
+    }
+    
+    /**
+     * Get the selection manager.
+     * 
+     * @return the selection manager
+     */
+    @NotNull
+    public SelectionManager getSelectionManager() {
+        return selectionManager;
+    }
+    
+    /**
+     * Get the storage manager.
+     * 
+     * @return the storage manager
+     */
+    @NotNull
+    public StorageManager getStorageManager() {
+        return storageManager;
     }
     
     /**

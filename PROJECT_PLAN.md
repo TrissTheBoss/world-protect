@@ -64,7 +64,7 @@ World-Protect/
 ## 3. Java and Minecraft Targets
 
 - **Java Version:** 17 (minimum required by Paper 1.17+)
-- **Paper API:** 1.21.4 (latest stable)
+- **Paper API:** 1.21.11 (latest stable)
 - **Folia Support:** Yes, via Paper's Folia API
 - **Gradle Version:** 8.5+ with wrapper
 

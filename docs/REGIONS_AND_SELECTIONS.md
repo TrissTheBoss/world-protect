@@ -1,401 +1,262 @@
-# Regions and Selections
+# Areas and Selections
 
-Complete guide to region creation, selection tools, and spatial management in World Protect.
+Complete guide to area creation, selection tools, and spatial management in World Protect.
 
-## 🏗️ Region Concepts
+## 🏗️ Area Concepts
 
-### What is a Region?
-A **region** is a protected 3D volume in a Minecraft world with defined boundaries and protection rules (flags). Regions can overlap, have different priorities, and contain members with special permissions.
+### What is an Area?
+An **area** is a protected 3D volume in a Minecraft world with defined boundaries, protection flags, and ownership/membership. Areas can overlap, have different priorities, and contain owners/members with special permissions.
 
-### Region Properties
-- **Name**: Unique identifier (alphanumeric, underscores)
-- **World**: Minecraft world the region exists in
+### Area Properties
+- **Name**: Unique identifier within a world
+- **World**: Minecraft world the area exists in
 - **Bounds**: Minimum and maximum coordinates (cuboid)
-- **Priority**: Integer (0-1000) for overlap resolution
-- **Flags**: Protection rules applied within the region
+- **Priority**: Integer (1-50) for overlap resolution (1 = highest)
+- **Shape**: SQUARE, CIRCLE, TRIANGLE, or HEXAGON
+- **Style**: FULL or BORDER (with border thickness)
+- **Flags**: Protection rules applied within the area
+- **Owners**: Players with full control over the area
 - **Members**: Players with special access permissions
-- **Owner**: Creator of the region (optional)
 
-### Region Types
-1. **Cuboid Regions**: Standard rectangular regions (most common)
-2. **Polygonal Regions**: Complex shapes (future feature)
-3. **Global Regions**: World-wide protection (special case)
-4. **Parent/Child Regions**: Hierarchical regions with inheritance
+### Area Shapes
+1. **SQUARE**: Axis-aligned rectangular area
+2. **CIRCLE**: Circular area with center and radius
+3. **TRIANGLE**: Triangular area defined by three points
+4. **HEXAGON**: Hexagonal area (regular polygon)
+
+### Area Styles
+1. **FULL**: Entire shape volume is protected
+2. **BORDER**: Only the border area is protected (configurable thickness)
 
 ## 🎯 Selection System
 
+### Selection Types
+World Protect supports two selection modes:
+
+1. **Point-Based Selection**: Using a wand with left/right clicks
+   - Left-click adds a point
+   - Right-click adds another point
+   - Need at least 2 points for basic area
+
+2. **Free-Draw Selection**: Player movement creates polygon
+   - Player moves to trace area boundaries
+   - Points added at intervals during movement
+   - Need at least 3 points for polygon
+
 ### Selection Wand
-The selection wand is the primary tool for defining region boundaries.
+The selection wand is the primary tool for defining area boundaries.
 
-**Default Wand**: Golden Axe (configurable)
+**Default Wand**: Wooden Axe (configurable)
 **Usage**:
-- **Right-click**: Set position 1 (primary corner)
-- **Left-click**: Set position 2 (opposite corner)
-- **Shift + Right-click**: Clear selection
+- **Left-click**: Add point at clicked block
+- **Right-click**: Add another point
+- **Shift + Right-click**: Remove last point
 
-### Visual Feedback
-- **Particles**: Shows selection boundaries
+### Selection Visualization
+- **Particles**: Shows selection points and boundaries
 - **Outline**: Visual wireframe of selected area
 - **Volume Display**: Shows block count in chat
-- **Color Coding**: Different colors for pos1 and pos2
+- **Point Count**: Shows number of points added
 
-### Selection Commands
-```bash
-# Manual position setting
-/wp pos1          # Set position 1 at current location
-/wp pos2          # Set position 2 at current location
-
-# Selection manipulation
-/wp expand <direction> <amount>    # Expand selection
-/wp contract <direction> <amount>  # Contract selection
-/wp shift <direction> <amount>     # Move selection
-/wp outset <amount>                # Expand all directions
-/wp inset <amount>                 # Contract all directions
-
-# Selection info
-/wp sel info      # Show selection information
-/wp sel clear     # Clear current selection
-/wp sel chunk     # Select current chunk
-```
-
-### Selection Directions
-- **Cardinal**: north, south, east, west
-- **Vertical**: up, down
-- **Combined**: horizontal, vertical, all
-
-## 📐 Region Creation
+## 📐 Area Creation
 
 ### Basic Creation
 ```bash
-# 1. Get selection wand
-/wp wand
+# 1. Use selection wand to define points
+#    (Left-click and right-click blocks)
 
-# 2. Select area (right-click and left-click blocks)
-
-# 3. Create region
+# 2. Create area with default values
 /wp create spawn_protection
 ```
 
-### Advanced Creation Options
-```bash
-# Create with specific priority
-/wp create shop_area -p 50
+### Area Creation Process
+1. **Make Selection**: Use wand to define area boundaries
+2. **Check Completion**: Ensure selection has enough points
+3. **Create Area**: Use `/wp create <name>` command
+4. **Set Flags**: Configure protection rules as needed
 
-# Create with initial flags
-/wp create arena -f "pvp=allow,block-break=deny"
-
-# Create from current chunk
-/wp create chunk_region --chunk
-
-# Create with custom boundaries
-/wp create custom_region --min 0,64,0 --max 100,128,100
-```
-
-### Region Validation
+### Area Validation
 Before creation, World Protect validates:
-1. **Name uniqueness**: No duplicate region names
-2. **Boundary validity**: Proper min/max coordinates
-3. **Volume limits**: Within configured maximum/minimum
-4. **World consistency**: Both positions in same world
-5. **Permission check**: User has create permission
+1. **Name uniqueness**: No duplicate area names in the world
+2. **Selection completeness**: Enough points for the shape
+3. **World consistency**: All points in same world
+4. **Permission check**: User has create permission
 
-## 🗺️ Region Management
+## 🗺️ Area Management
 
-### Listing Regions
+### Listing Areas
 ```bash
-# List all regions
+# List all areas
 /wp list
 
-# List regions in specific world
-/wp list world_nether
-
-# List with filters
-/wp list --owner "Notch"
-/wp list --priority 100
-/wp list --volume 1000
-
-# Detailed list
-/wp list --verbose
+# Area list shows:
+# - Area name
+# - Owners
+# - World
+# - Priority
+# - Volume
 ```
 
-### Region Information
+### Area Information
 ```bash
-# Basic info
+# Detailed area information
 /wp info spawn
 
-# Detailed info with flags
-/wp info spawn --flags
-
-# Info with members
-/wp info spawn --members
-
-# Info with boundaries
-/wp info spawn --bounds
+# Shows:
+# - World and priority
+# - Shape and style
+# - Volume and creation date
+# - Owners and members
+# - Boundary coordinates
 ```
 
-### Region Modification
+### Area Deletion
 ```bash
-# Redefine boundaries from current selection
-/wp redefine spawn
-
-# Change region priority
-/wp priority spawn 100
-
-# Rename region
-/wp rename spawn new_spawn
-
-# Clone region
-/wp clone spawn spawn_copy
+# Delete area (owners or admins only)
+/wp delete old_area
 ```
 
-### Region Deletion
-```bash
-# Delete region
-/wp delete old_region
-
-# Force delete (bypass checks)
-/wp delete region --force
-
-# Delete all regions in world
-/wp delete --world world_nether --all
-```
-
-## 🔄 Region Overlaps and Priority
+## 🔄 Area Overlaps and Priority
 
 ### Priority System
-When regions overlap, flags are evaluated based on priority:
-- **Higher priority** regions override lower priority regions
-- **Same priority**: Most restrictive flag wins (deny > allow)
-- **Priority range**: 0 (lowest) to 1000 (highest)
+When areas overlap, flags are evaluated based on priority:
+- **Higher priority** areas override lower priority areas (1 = highest, 50 = lowest)
+- **Same priority**: First area in alphabetical order wins
+- **Atomic flags** override group flags
+- **Owner/Member** status affects flag resolution
 
 ### Overlap Examples
 ```
-Region A (priority 50): block-break = deny
-Region B (priority 100): block-break = allow
-Result at overlap: block-break = allow (Region B wins)
+Area A (priority 10): block-break = false
+Area B (priority 5): block-break = true
+Result at overlap: block-break = false (Area A wins - higher priority)
 ```
 
-### Inheritance System
-Regions can inherit flags from parent regions:
-```bash
-# Create parent region
-/wp create parent -f "block-break=deny"
+### Subject Groups
+Flags can have different values for different subject groups:
+- **OWNER**: Area owners have full control
+- **MEMBER**: Area members have special permissions
+- **NONMEMBER**: Players who are not owners or members
 
-# Create child region with inheritance
-/wp create child --parent parent -f "pvp=deny"
+## 👥 Owner and Member Management
 
-# Child inherits block-break=deny from parent
-# Child adds its own pvp=deny flag
-```
-
-## 👥 Member Management
-
-### Member Permissions
-- **Owner**: Full control (create, delete, modify, add members)
-- **Member**: Special access (bypass some flags)
-- **Guest**: Limited access (view only)
-
-### Member Commands
-```bash
-# Add member
-/wp member add spawn Notch
-/wp member add shop Alex owner
-
-# Remove member
-/wp member remove spawn Notch
-
-# List members
-/wp member list spawn
-
-# Set member permission
-/wp member set spawn Alex member
-```
+### Owner Permissions
+- **Full control**: Create, delete, modify area
+- **Flag management**: Set protection flags
+- **Member management**: Add/remove members
+- **Ownership transfer**: Add/remove other owners
 
 ### Member Benefits
-Members can bypass certain flags:
-- `block-break=members`: Only members can break blocks
-- `entry=members`: Only members can enter
-- `container-access=members`: Only members access containers
+Members can have different flag values than nonmembers:
+- Owners may bypass block protection
+- Members may have special interaction permissions
+- Nonmembers follow standard protection rules
 
-## 🎨 Visual Tools
-
-### Boundary Visualization
-```bash
-# Show region boundaries
-/wp visualize spawn
-
-# Custom visualization
-/wp visualize spawn --particle REDSTONE --color GREEN --interval 10
-
-# Hide boundaries
-/wp visualize spawn --hide
-
-# Visualize all regions in world
-/wp visualize --world world_nether
-```
-
-### Selection Visualization
-```bash
-# Show selection particles
-/wp sel visualize
-
-# Change particle type
-/wp sel visualize --particle VILLAGER_HAPPY
-
-# Adjust particle density
-/wp sel visualize --density 5
-```
-
-### Map Integration
-```bash
-# Show regions on dynmap (if installed)
-/wp map show spawn
-
-# Hide regions on map
-/wp map hide spawn
-
-# Update map markers
-/wp map update
-```
+### Automatic Ownership
+- Area creator automatically becomes owner
+- Owners can add other owners
+- Owners can add/remove members
 
 ## 📊 Spatial Indexing
 
-### How Region Lookup Works
-World Protect uses spatial indexing for fast region lookup:
+### How Area Lookup Works
+World Protect uses efficient spatial indexing for fast area lookup:
 
-1. **Grid Index**: World divided into configurable grid cells
-2. **Region Registration**: Regions registered in all overlapping cells
-3. **Location Query**: Lookup checks only relevant grid cells
-4. **Result Cache**: Frequently accessed locations cached
+1. **World-based Indexing**: Areas indexed by world
+2. **Boundary Checking**: Simple AABB (axis-aligned bounding box) checks
+3. **Priority Sorting**: Areas sorted by priority for overlap resolution
+4. **Caching**: Frequently accessed locations cached
 
 ### Performance Optimization
-- **Grid Size**: Configurable cell size (default: 16 chunks)
-- **Cache Size**: LRU cache for lookup results
-- **Async Processing**: Offload heavy spatial queries
-- **Lazy Loading**: Regions loaded on-demand
-
-### Index Statistics
-```bash
-# Show spatial index stats
-/wp debug index
-
-# Rebuild spatial index
-/wp debug rebuild-index
-
-# Test lookup performance
-/wp debug benchmark 1000
-```
+- **World Separation**: Areas indexed per world for faster lookups
+- **Priority Sorting**: Pre-sorted by priority for quick resolution
+- **Simple Geometry**: Efficient boundary calculations
+- **Minimal Overhead**: Lightweight data structures
 
 ## 🛠️ Advanced Features
 
-### Region Shapes
-```bash
-# Create cylindrical region
-/wp create cylinder_region --shape cylinder --radius 10 --height 20
+### Shape Support
+Areas support multiple geometric shapes:
+- **SQUARE**: Simple rectangular areas (most common)
+- **CIRCLE**: Circular protection zones
+- **TRIANGLE**: Triangular areas for complex layouts
+- **HEXAGON**: Hexagonal areas for grid-based systems
 
-# Create spherical region
-/wp create sphere_region --shape sphere --radius 15
+### Border Style
+BORDER style creates protected borders only:
+- **Border Thickness**: Configurable width of protected border
+- **Interior Access**: Players can access interior freely
+- **Perimeter Protection**: Only border area is protected
 
-# Create polygonal region
-/wp create poly_region --shape poly --points "0,0, 10,0, 10,10, 0,10"
-```
-
-### Temporary Regions
-```bash
-# Create temporary region (expires after time)
-/wp create temp_region --duration 1h
-
-# Create event region (auto-deletes after event)
-/wp create event_region --expire-on-empty
-```
-
-### Region Templates
-```bash
-# Save region as template
-/wp template save spawn protection_template
-
-# Create region from template
-/wp create new_spawn --template protection_template
-
-# List available templates
-/wp template list
-```
-
-### Import/Export
-```bash
-# Export regions to file
-/wp export regions.json
-/wp export regions.yml
-
-# Import regions from file
-/wp import regions.json
-/wp import regions.yml --merge
-
-# Export specific regions
-/wp export --region spawn --region shop
-```
+### Group Flags
+Toggle multiple flags at once with group flags:
+- `environment-all`: All environment flags
+- `explosions-all`: All explosion flags
+- `interactions-all`: All interaction flags
+- `build-all`: All building flags
+- `mob-all`: All mob-related flags
 
 ## ⚠️ Common Issues and Solutions
 
 ### Selection Problems
-**Issue**: "Positions are in different worlds"
-**Solution**: Ensure both positions are in the same world
+**Issue**: "Not enough points in selection"
+**Solution**: Add more points with wand (2+ for point-based, 3+ for free-draw)
+
+**Issue**: "Points in different worlds"
+**Solution**: Ensure all selection points are in same world
 
 **Issue**: "Selection too large"
-**Solution**: Check `max-region-volume` in config, reduce selection size
+**Solution**: Consider creating multiple smaller areas
 
-**Issue**: "No selection made"
-**Solution**: Use `/wp pos1` and `/wp pos2` or get wand with `/wp wand`
+### Area Conflicts
+**Issue**: "Area name already exists"
+**Solution**: Choose a different name or delete existing area
 
-### Region Conflicts
-**Issue**: "Region name already exists"
-**Solution**: Choose a different name or delete existing region
-
-**Issue**: "Cannot modify region"
+**Issue**: "Cannot modify area"
 **Solution**: Check ownership or get `worldprotect.admin` permission
 
 **Issue**: "Flags not working in overlap"
-**Solution**: Check region priorities with `/wp info <region>`
+**Solution**: Check area priorities and subject groups
 
 ### Performance Issues
-**Issue**: "Lag when many regions exist"
-**Solution**: Increase grid cell size, disable boundary visualization
+**Issue**: "Many areas causing lag"
+**Solution**: Combine small areas when possible, use appropriate priorities
 
-**Issue**: "Slow region lookup"
-**Solution**: Rebuild spatial index with `/wp debug rebuild-index`
+**Issue**: "Slow area lookup"
+**Solution**: Ensure areas are properly sized and distributed
 
 **Issue**: "High memory usage"
-**Solution**: Reduce cache sizes, disable unused features
+**Solution**: Use simpler shapes and fewer flags when possible
 
 ## 📈 Best Practices
 
-### Region Design
-1. **Keep regions simple**: Use cuboids when possible
-2. **Use appropriate priorities**: Reserve high priorities for critical areas
-3. **Group related regions**: Use similar naming conventions
-4. **Document regions**: Add comments or notes for complex setups
+### Area Design
+1. **Keep areas simple**: Use SQUARE shape when possible
+2. **Use appropriate priorities**: Reserve high priorities (1-10) for critical areas
+3. **Group related areas**: Use similar naming conventions
+4. **Document complex setups**: Note area purposes and special rules
 
 ### Performance Optimization
-1. **Limit region count**: Combine small regions when possible
-2. **Use appropriate grid size**: Larger worlds need larger grid cells
-3. **Disable visualization**: In production for better performance
-4. **Use caching**: Enable and tune cache settings
+1. **Limit area count**: Combine small areas when possible
+2. **Use simple shapes**: SQUARE is most efficient
+3. **Optimize priorities**: Use meaningful priority values
+4. **Use group flags**: Apply multiple flags at once
 
 ### Maintenance
-1. **Regular cleanup**: Delete unused regions
-2. **Backup regions**: Export before major changes
-3. **Monitor performance**: Use `/wp debug` commands
-4. **Update configurations**: Keep configs optimized for your server
+1. **Regular cleanup**: Delete unused areas
+2. **Monitor performance**: Check area counts and sizes
+3. **Update configurations**: Keep priorities optimized
+4. **Document changes**: Note area modifications
 
 ## 🔄 Auto-Generated Documentation
 
-*Note: The selection and region command sections are auto-generated from the command registry. When new selection commands are added, run the documentation sync process.*
+*Note: This document is auto-generated from the Area and Selection classes. When new features are added, the documentation will be updated automatically.*
 
-**Last Generated**: 2024-01-01  
-**Selection Commands**: 12  
-**Region Commands**: 18  
-**Member Commands**: 6
+**Last Generated**: 2026-02-17  
+**Area Shapes**: 4  
+**Area Styles**: 2  
+**Selection Modes**: 2
 
 ---
 
-*For technical implementation details, see `ARCHITECTURE.md`. For command reference, see `COMMANDS_AND_PERMISSIONS.md`.*
+*For technical implementation details, see `ARCHITECTURE.md`. For command reference, see `COMMANDS_AND_PERMISSIONS.md`. For flag reference, see `FLAGS.md`.*

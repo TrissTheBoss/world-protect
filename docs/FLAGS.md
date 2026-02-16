@@ -7,438 +7,277 @@ Complete reference for all protection flags available in World Protect.
 Flags are the core protection mechanism in World Protect. Each flag controls a specific aspect of gameplay within a protected region.
 
 ### Flag Value Types
-- **allow**: Action is permitted
-- **deny**: Action is prevented
-- **passthrough**: Inherit from parent region or global default
-- **members**: Only region members can perform action
-- **non-members**: Only non-members are affected
-- **custom**: Flag-specific custom values
+- **true**: Action is allowed
+- **false**: Action is denied
+- **default**: Use the flag's default value
+
+### Subject Groups
+Flags can have different values for different subject groups:
+- **OWNER**: Area owners have full control
+- **MEMBER**: Area members have special permissions
+- **NONMEMBER**: Players who are not owners or members
 
 ### Flag Priority
-When multiple regions overlap, flags are evaluated in this order:
-1. Region with highest priority
-2. Most specific flag value (non-passthrough)
-3. Global defaults
+When multiple areas overlap, flags are evaluated in this order:
+1. Areas sorted by priority (1 = highest, 50 = lowest)
+2. Atomic flag values override group flag values
+3. Higher priority areas override lower priority areas
+4. For ties, the first area in alphabetical order wins
+
+### Group Flags
+Group flags toggle multiple atomic flags at once:
+- `environment-all`: All environment flags
+- `explosions-all`: All explosion flags
+- `interactions-all`: All interaction flags
+- `build-all`: All building flags
+- `mob-all`: All mob-related flags
 
 ## 🏗️ Block Protection Flags
 
 ### `block-break`
 **Description**: Controls breaking of blocks.
 
-**Values**: allow, deny, members, non-members  
-**Default**: deny  
-**Category**: Block  
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Blocks & Containers  
 **Events**: BlockBreakEvent
 
 **Examples**:
 ```bash
-/wp flag spawn block-break deny
-/wp flag build_area block-break members
+/wp flags spawn block-break false
+/wp flags build_area block-break true
 ```
 
 ### `block-place`
 **Description**: Controls placing of blocks.
 
-**Values**: allow, deny, members, non-members  
-**Default**: deny  
-**Category**: Block  
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Blocks & Containers  
 **Events**: BlockPlaceEvent
 
-### `block-interact`
-**Description**: Controls interactions with blocks (buttons, levers, doors).
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Block  
-**Events**: PlayerInteractEvent
-
 ### `use`
-**Description**: General use of items and blocks.
+**Description**: Controls use of doors, buttons, levers, etc.
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Block  
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Blocks & Containers  
 **Events**: PlayerInteractEvent
 
 ### `container-access`
-**Description**: Access to containers (chests, furnaces, etc.).
+**Description**: Controls access to containers (chests, furnaces, etc.).
 
-**Values**: allow, deny, members, non-members  
-**Default**: deny  
-**Category**: Block  
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Blocks & Containers  
 **Events**: InventoryOpenEvent
 
-## ⚔️ Combat & PvP Flags
+## ⚔️ Player Combat Flags
 
 ### `pvp`
-**Description**: Player vs player combat.
+**Description**: Controls player vs player combat.
 
-**Values**: allow, deny  
-**Default**: deny  
-**Category**: Combat  
+**Values**: true, false, default  
+**Default**: false  
+**Category**: Player Combat  
 **Events**: EntityDamageByEntityEvent
 
 **Examples**:
 ```bash
-/wp flag arena pvp allow
-/wp flag spawn pvp deny
+/wp flags arena pvp true
+/wp flags spawn pvp false
 ```
 
-### `damage-players`
-**Description**: Any damage to players.
+## 🧟 Mob & Entity Flags
 
-**Values**: allow, deny  
-**Default**: deny  
-**Category**: Combat  
-**Events**: EntityDamageEvent
+### `mob-damage-players`
+**Description**: Controls whether mobs can damage players.
 
-### `damage-animals`
-**Description**: Damage to animals.
-
-**Values**: allow, deny  
-**Default**: deny  
-**Category**: Combat  
-**Events**: EntityDamageEvent
-
-### `damage-monsters`
-**Description**: Damage to monsters.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Combat  
-**Events**: EntityDamageEvent
-
-### `damage-ambient`
-**Description**: Damage to ambient creatures (bats, etc.).
-
-**Values**: allow, deny  
-**Default**: deny  
-**Category**: Combat  
-**Events**: EntityDamageEvent
-
-## 🧟 Entity Flags
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Mobs & Entities  
+**Events**: EntityDamageByEntityEvent
 
 ### `mob-spawning`
-**Description**: Natural mob spawning.
+**Description**: Controls mob spawning.
 
-**Values**: allow, deny  
-**Default**: deny  
-**Category**: Entity  
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Mobs & Entities  
 **Events**: CreatureSpawnEvent
 
-### `animal-spawning`
-**Description**: Natural animal spawning.
+## 💥 Explosion Flags
 
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Entity  
-**Events**: CreatureSpawnEvent
+### `tnt`
+**Description**: Controls TNT explosions.
 
-### `item-drop`
-**Description**: Dropping of items.
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Explosions  
+**Events**: EntityExplodeEvent
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Entity  
-**Events**: PlayerDropItemEvent
+### `creeper-explosion`
+**Description**: Controls creeper explosions.
 
-### `item-pickup`
-**Description**: Picking up items.
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Explosions  
+**Events**: EntityExplodeEvent
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Entity  
-**Events**: EntityPickupItemEvent
+### `ghast-fireball`
+**Description**: Controls ghast fireball explosions.
 
-### `vehicle-place`
-**Description**: Placing vehicles (boats, minecarts).
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Explosions  
+**Events**: EntityExplodeEvent
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Entity  
-**Events**: VehicleCreateEvent
-
-### `vehicle-destroy`
-**Description**: Destroying vehicles.
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Entity  
-**Events**: VehicleDestroyEvent
-
-## 🚶 Movement Flags
-
-### `entry`
-**Description**: Entering the region.
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Movement  
-**Events**: PlayerMoveEvent
-
-**Examples**:
-```bash
-/wp flag vip_area entry members
-/wp flag restricted entry deny
-```
-
-### `exit`
-**Description**: Leaving the region.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Movement  
-**Events**: PlayerMoveEvent
-
-### `teleport`
-**Description**: Teleporting into or within the region.
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Movement  
-**Events**: PlayerTeleportEvent
-
-### `enderpearl`
-**Description**: Using ender pearls.
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Movement  
-**Events**: PlayerTeleportEvent
-
-### `flight`
-**Description**: Flying (creative mode or with elytra).
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Movement  
-**Events**: PlayerToggleFlightEvent
-
-## 🔥 Environmental Flags
+## 🌍 Environment Flags
 
 ### `fire-spread`
-**Description**: Fire spreading.
+**Description**: Controls fire spread.
 
-**Values**: allow, deny  
-**Default**: deny  
+**Values**: true, false, default  
+**Default**: true  
 **Category**: Environment  
 **Events**: BlockSpreadEvent
 
-### `lava-fire`
-**Description**: Fire caused by lava.
+### `lava-flow`
+**Description**: Controls lava flow.
 
-**Values**: allow, deny  
-**Default**: deny  
+**Values**: true, false, default  
+**Default**: true  
 **Category**: Environment  
-**Events**: BlockIgniteEvent
+**Events**: BlockFromToEvent
+
+### `water-flow`
+**Description**: Controls water flow.
+
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Environment  
+**Events**: BlockFromToEvent
 
 ### `lightning`
-**Description**: Lightning strikes.
+**Description**: Controls lightning strikes.
 
-**Values**: allow, deny  
-**Default**: deny  
+**Values**: true, false, default  
+**Default**: true  
 **Category**: Environment  
 **Events**: LightningStrikeEvent
 
-### `ice-form`
-**Description**: Ice formation.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Environment  
-**Events**: BlockFormEvent
-
-### `ice-melt`
-**Description**: Ice melting.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Environment  
-**Events**: BlockFadeEvent
-
 ### `snow-fall`
-**Description**: Snow accumulation.
+**Description**: Controls snow accumulation.
 
-**Values**: allow, deny  
-**Default**: allow  
+**Values**: true, false, default  
+**Default**: true  
 **Category**: Environment  
 **Events**: BlockFormEvent
 
 ### `snow-melt`
-**Description**: Snow melting.
+**Description**: Controls snow melting.
 
-**Values**: allow, deny  
-**Default**: allow  
+**Values**: true, false, default  
+**Default**: true  
 **Category**: Environment  
 **Events**: BlockFadeEvent
 
-## 🎮 Gameplay Flags
+### `ice-form`
+**Description**: Controls ice formation.
 
-### `sleep`
-**Description**: Sleeping in beds.
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Environment  
+**Events**: BlockFormEvent
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Gameplay  
-**Events**: PlayerBedEnterEvent
+### `ice-melt`
+**Description**: Controls ice melting.
 
-### `respawn-anchor`
-**Description**: Using respawn anchors.
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Environment  
+**Events**: BlockFadeEvent
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Gameplay  
-**Events**: PlayerRespawnAnchorEvent
+## 📦 Item & Vehicle Flags
 
-### `chorus-fruit`
-**Description**: Using chorus fruit.
+### `item-drop`
+**Description**: Controls item dropping.
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Gameplay  
-**Events**: PlayerTeleportEvent
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Items & Vehicles  
+**Events**: PlayerDropItemEvent
 
-### `elytra`
-**Description**: Using elytra.
+### `item-pickup`
+**Description**: Controls item pickup.
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Gameplay  
-**Events**: EntityToggleGlideEvent
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Items & Vehicles  
+**Events**: EntityPickupItemEvent
 
-### `trident`
-**Description**: Using tridents (loyalty, riptide).
+### `vehicle-place`
+**Description**: Controls vehicle placement.
 
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Gameplay  
-**Events**: ProjectileLaunchEvent
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Items & Vehicles  
+**Events**: VehicleCreateEvent
 
-## 🎨 Visual & Effect Flags
+### `vehicle-destroy`
+**Description**: Controls vehicle destruction.
 
-### `potion-effects`
-**Description**: Applying potion effects.
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Effects  
-**Events**: PotionSplashEvent, AreaEffectCloudApplyEvent
-
-### `explosions`
-**Description**: Explosions (TNT, creepers, beds in nether).
-
-**Values**: allow, deny  
-**Default**: deny  
-**Category**: Effects  
-**Events**: EntityExplodeEvent, BlockExplodeEvent
-
-### `fireworks`
-**Description**: Using fireworks.
-
-**Values**: allow, deny, members, non-members  
-**Default**: allow  
-**Category**: Effects  
-**Events**: FireworkExplodeEvent
-
-### `particles`
-**Description**: Particle effects.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Effects  
-**Events**: Various
-
-## 🏗️ Redstone & Mechanics
-
-### `redstone`
-**Description**: Redstone activation.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Mechanics  
-**Events**: BlockRedstoneEvent
-
-### `pistons`
-**Description**: Piston extension/retraction.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Mechanics  
-**Events**: BlockPistonExtendEvent, BlockPistonRetractEvent
-
-### `dispensers`
-**Description**: Dispenser activation.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Mechanics  
-**Events**: BlockDispenseEvent
-
-### `droppers`
-**Description**: Dropper activation.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Mechanics  
-**Events**: BlockDispenseEvent
-
-### `hoppers`
-**Description**: Hopper item transfer.
-
-**Values**: allow, deny  
-**Default**: allow  
-**Category**: Mechanics  
-**Events**: InventoryMoveItemEvent
+**Values**: true, false, default  
+**Default**: true  
+**Category**: Items & Vehicles  
+**Events**: VehicleDestroyEvent
 
 ## 📊 Flag Categories Summary
 
 | Category | Flag Count | Description |
 |----------|------------|-------------|
-| Block | 5 | Block interactions and modifications |
-| Combat | 5 | PvP and damage-related flags |
-| Entity | 6 | Mob spawning and entity interactions |
-| Movement | 5 | Player movement and teleportation |
-| Environment | 7 | Environmental effects and changes |
-| Gameplay | 5 | Game mechanics and items |
-| Effects | 4 | Visual and sound effects |
-| Mechanics | 5 | Redstone and mechanical devices |
+| Player Combat | 1 | Player vs player combat |
+| Mobs & Entities | 2 | Mob damage and spawning |
+| Explosions | 3 | TNT, creeper, and ghast explosions |
+| Environment | 8 | Fire, fluids, weather, and ice effects |
+| Blocks & Containers | 4 | Block breaking, placing, and interactions |
+| Items & Vehicles | 4 | Item dropping/pickup and vehicle handling |
 
 ## 🎯 Common Flag Combinations
 
 ### Spawn Protection
 ```bash
-/wp flag spawn block-break deny
-/wp flag spawn block-place deny
-/wp flag spawn pvp deny
-/wp flag spawn mob-spawning deny
-/wp flag spawn explosions deny
-/wp flag spawn fire-spread deny
+/wp flags spawn block-break false
+/wp flags spawn block-place false
+/wp flags spawn pvp false
+/wp flags spawn mob-spawning false
+/wp flags spawn explosions-all false
+/wp flags spawn environment-all false
 ```
 
 ### Build Area
 ```bash
-/wp flag build_area block-break members
-/wp flag build_area block-place members
-/wp flag build_area pvp deny
-/wp flag build_area entry allow
+/wp flags build_area block-break true
+/wp flags build_area block-place true
+/wp flags build_area pvp false
+/wp flags build_area build-all true
 ```
 
 ### PvP Arena
 ```bash
-/wp flag arena pvp allow
-/wp flag arena block-break deny
-/wp flag arena block-place deny
-/wp flag arena explosions allow
-/wp flag arena entry allow
+/wp flags arena pvp true
+/wp flags arena block-break false
+/wp flags arena block-place false
+/wp flags arena explosions-all true
 ```
 
 ### Shop Area
 ```bash
-/wp flag shops block-break deny
-/wp flag shops block-place deny
-/wp flag shops container-access members
-/wp flag shops pvp deny
-/wp flag shops entry allow
+/wp flags shops block-break false
+/wp flags shops block-place false
+/wp flags shops container-access true
+/wp flags shops pvp false
+/wp flags shops interactions-all true
 ```
 
 ## ⚙️ Flag Configuration
@@ -448,57 +287,78 @@ Flags can have default values configured in `config.yml`:
 ```yaml
 flags:
   defaults:
-    block-break: deny
-    block-place: deny
-    pvp: deny
-    entry: allow
-    mob-spawning: deny
+    block-break: true
+    block-place: true
+    pvp: false
+    mob-spawning: true
+    fire-spread: true
 ```
 
-### Flag Aliases
-Create shorter aliases for commonly used flags:
+### Subject Group Defaults
+Configure different defaults for owners, members, and nonmembers:
 ```yaml
 flags:
-  aliases:
-    build: block-break,block-place
-    protect: block-break,block-place,pvp
-    safe: block-break,block-place,pvp,mob-spawning
+  subject-defaults:
+    owner:
+      block-break: true
+      block-place: true
+    member:
+      block-break: true
+      block-place: true
+    nonmember:
+      block-break: false
+      block-place: false
 ```
 
-### Flag Inheritance
-Flags support inheritance through the `passthrough` value:
-```bash
-# Region inherits from global defaults
-/wp flag region block-break passthrough
-
-# Child region inherits from parent
-/wp flag child_region pvp passthrough
+### Group Flag Configuration
+Customize which flags are included in group flags:
+```yaml
+flags:
+  groups:
+    environment-all:
+      - fire-spread
+      - lava-flow
+      - water-flow
+      - lightning
+      - snow-fall
+      - snow-melt
+      - ice-form
+      - ice-melt
+    build-all:
+      - block-break
+      - block-place
 ```
 
 ## 🔄 Auto-Generated Documentation
 
-*Note: This document is partially auto-generated from the Flag enum in the codebase. When new flags are added, run the documentation sync process to update this file.*
+*Note: This document is auto-generated from the Flag and GroupFlag enums in the codebase. When new flags are added, the documentation will be updated automatically.*
 
-**Last Generated**: 2024-01-01  
-**Total Flags**: 42  
-**Categories**: 8
+**Last Generated**: 2026-02-17  
+**Total Atomic Flags**: 22  
+**Total Group Flags**: 5  
+**Categories**: 6
 
 ### Flag Metadata Structure
 ```java
 public enum Flag {
-    BLOCK_BREAK(
-        "block-break",
-        "Controls breaking of blocks",
-        FlagValue.DENY,
-        FlagCategory.BLOCK,
-        BlockBreakEvent.class
-    ),
+    PVP("pvp", "Controls player vs player combat", false),
+    BLOCK_BREAK("block-break", "Controls breaking of blocks", true),
     // ... other flags
 }
 ```
 
+### Group Flag Structure
+```java
+public enum GroupFlag {
+    ENVIRONMENT_ALL("environment-all", "All environment flags",
+        Arrays.asList(Flag.FIRE_SPREAD, Flag.LAVA_FLOW, Flag.WATER_FLOW, Flag.LIGHTNING,
+            Flag.SNOW_FALL, Flag.SNOW_MELT, Flag.ICE_FORM, Flag.ICE_MELT)),
+    // ... other group flags
+}
+```
+
 ### Documentation Sync Process
-1. Read `Flag.java` enum
+1. Read `Flag.java` and `GroupFlag.java` enums
 2. Extract flag metadata (name, description, default, category)
 3. Generate Markdown tables and examples
 4. Update this file while preserving manual content
