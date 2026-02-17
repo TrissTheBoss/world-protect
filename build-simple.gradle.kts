@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.worldprotect"
-version = "1.0.0-SNAPSHOT"
+version = "0.1.0"
 description = "Advanced world protection plugin for Paper/Folia"
 
 java {
