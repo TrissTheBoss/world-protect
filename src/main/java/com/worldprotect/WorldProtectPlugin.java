@@ -36,43 +36,67 @@ public class WorldProtectPlugin extends JavaPlugin {
         // Load configuration
         saveDefaultConfig();
         
-        // Initialize components
-        initializeComponents();
+        // Initialize components synchronously (lightweight initialization)
+        // Heavy async initialization will happen in onEnable()
+        this.areaManager = new AreaManager();
+        this.selectionManager = new SelectionManager();
+        
+        // Initialize storage manager (but don't load data yet)
+        File dataFolder = new File(getDataFolder(), "areas");
+        this.storageManager = new YamlStorageManager(dataFolder);
     }
     
     @Override
     public void onEnable() {
         getLogger().info("World Protect enabling...");
         
-        // Register commands
-        registerCommands();
-        
-        // Register event listeners
-        registerEvents();
-        
-        // Initialize API
-        initializeAPI();
-        
-        // Start metrics
-        startMetrics();
-        
-        // Load data
-        loadData();
-        
-        getLogger().info("World Protect enabled successfully!");
-        getLogger().info("Version: " + getDescription().getVersion());
-        getLogger().info("Author: " + getDescription().getAuthors());
+        // Initialize storage asynchronously
+        storageManager.initialize().thenRun(() -> {
+            // Register commands
+            registerCommands();
+            
+            // Register event listeners
+            registerEvents();
+            
+            // Initialize API
+            initializeAPI();
+            
+            // Start metrics
+            startMetrics();
+            
+            // Load data asynchronously
+            loadDataAsync();
+            
+            getLogger().info("World Protect enabled successfully!");
+            getLogger().info("Version: " + getDescription().getVersion());
+            getLogger().info("Author: " + getDescription().getAuthors());
+        }).exceptionally(throwable -> {
+            getLogger().severe("Failed to enable World Protect: " + throwable.getMessage());
+            throwable.printStackTrace();
+            return null;
+        });
     }
     
     @Override
     public void onDisable() {
         getLogger().info("World Protect disabling...");
         
-        // Save data
-        saveData();
+        // Save data synchronously during shutdown
+        // This is acceptable since the server is shutting down
+        try {
+            saveData();
+        } catch (Exception e) {
+            getLogger().severe("Failed to save data during shutdown: " + e.getMessage());
+            e.printStackTrace();
+        }
         
         // Cleanup resources
-        cleanup();
+        try {
+            cleanup();
+        } catch (Exception e) {
+            getLogger().severe("Failed to cleanup resources during shutdown: " + e.getMessage());
+            e.printStackTrace();
+        }
         
         getLogger().info("World Protect disabled successfully!");
     }
@@ -147,7 +171,25 @@ public class WorldProtectPlugin extends JavaPlugin {
     }
     
     /**
-     * Load plugin data.
+     * Load plugin data asynchronously.
+     */
+    private void loadDataAsync() {
+        getLogger().info("Loading area data...");
+        
+        storageManager.loadAllAreas().thenAccept(areas -> {
+            for (com.worldprotect.area.Area area : areas) {
+                areaManager.addArea(area);
+            }
+            getLogger().info("Loaded " + areas.size() + " areas");
+        }).exceptionally(throwable -> {
+            getLogger().severe("Failed to load area data: " + throwable.getMessage());
+            throwable.printStackTrace();
+            return null;
+        });
+    }
+    
+    /**
+     * Load plugin data (synchronous version for compatibility).
      */
     private void loadData() {
         getLogger().info("Loading area data...");

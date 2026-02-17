@@ -89,6 +89,32 @@ worldprotect.admin                    # Full administrative access
 /wp flags
 ```
 
+### `/wp flag <area> <flag> <value>`
+**Description**: Sets a flag value for an area.
+
+**Arguments**:
+- `area`: Name of the area
+- `flag`: Flag name to set
+- `value`: Value (true/false, allow/deny, 1/0)
+
+**Permission**: `worldprotect.command.flag`
+
+**Examples**:
+```
+/wp flag spawn pvp false
+/wp flag arena explosions allow
+```
+
+### `/wp wand`
+**Description**: Gives you the selection wand.
+
+**Permission**: `worldprotect.command.wand`
+
+**Examples**:
+```
+/wp wand
+```
+
 ### `/wp reload`
 **Description**: Reloads plugin configuration.
 
@@ -126,6 +152,8 @@ worldprotect.admin                    # Full administrative access
 | `worldprotect.command.list` | List all areas | true |
 | `worldprotect.command.info` | View area information | true |
 | `worldprotect.command.flags` | List available flags | true |
+| `worldprotect.command.flag` | Set area flags | op |
+| `worldprotect.command.wand` | Get selection wand | op |
 | `worldprotect.command.reload` | Reload plugin configuration | op |
 | `worldprotect.command.version` | View plugin version | true |
 
@@ -139,6 +167,8 @@ worldprotect.admin
     ├── worldprotect.command.list
     ├── worldprotect.command.info
     ├── worldprotect.command.flags
+    ├── worldprotect.command.flag
+    ├── worldprotect.command.wand
     ├── worldprotect.command.reload
     └── worldprotect.command.version
 ```
@@ -186,5 +216,5 @@ worldprotect.admin
 *Note: This document is auto-generated from the command registry. When new commands are added to the codebase, the documentation will be updated automatically.*
 
 **Last Generated**: 2026-02-17  
-**Command Count**: 8  
-**Permission Nodes**: 9
+**Command Count**: 10  
+**Permission Nodes**: 12
