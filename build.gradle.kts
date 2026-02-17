@@ -4,8 +4,8 @@ plugins {
 }
 
 group = "com.worldprotect"
-version = "0.1.0"
-description = "Advanced world protection plugin for Paper/Folia"
+version = project.property("pluginVersion") as String
+description = project.property("pluginDescription") as String
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
