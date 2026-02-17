@@ -25,6 +25,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - N/A
 
+## [0.1.3] - 2026-02-17
+
+### Added
+- Complete implementation of `/wp here` command family
+- `/wp circle` command for creating circular areas
+- Full shape implementations (square, circle, triangle, hexagon)
+- Full style implementations (full, border)
+- Area visualization with `/wp here visualize`
+
+### Changed
+- Selection wand now properly resets volume calculations
+- Improved tab completion for all commands
+- Enhanced error messages with suggestions
+
+### Fixed
+- Selection wand volume calculation bug
+- Flag value parsing for allow/deny terminology
+- Build compilation issues
+
 ## [0.1.2] - 2026-02-17
 
 ### Added
