@@ -137,6 +137,67 @@ worldprotect.admin                    # Full administrative access
 /wp version
 ```
 
+### `/wp cancel`
+**Description**: Cancels your current selection.
+
+**Permission**: `worldprotect.command.cancel`
+
+**Examples**:
+```
+/wp cancel
+```
+
+### `/wp here`
+**Description**: Shows areas at your current location.
+
+**Permission**: `worldprotect.command.here`
+
+**Examples**:
+```
+/wp here
+/wp here flags
+/wp here visualize
+```
+
+### `/wp circle <name> <radius> [height]`
+**Description**: Creates a circular area centered at your location.
+
+**Arguments**:
+- `name`: Unique name for the area
+- `radius`: Radius of the circle in blocks
+- `height`: Optional height of the cylinder (default: radius * 2)
+
+**Permission**: `worldprotect.command.circle`
+
+**Examples**:
+```
+/wp circle spawn 10
+/wp circle arena 20 10
+```
+
+### `/wp selection new <name>`
+**Description**: Starts a new selection with the given name.
+
+**Arguments**:
+- `name`: Name for the selection
+
+**Permission**: `worldprotect.command.selection`
+
+**Examples**:
+```
+/wp selection new myarea
+```
+
+### `/wp selection info`
+**Description**: Shows information about your current selection.
+
+**Permission**: `worldprotect.command.selection`
+
+**Examples**:
+```
+/wp selection info
+```
+
 ## 🔐 Permission Reference
 
 ### Administrative Permissions
@@ -158,6 +219,10 @@ worldprotect.admin                    # Full administrative access
 | `worldprotect.command.wand` | Get selection wand | op |
 | `worldprotect.command.reload` | Reload plugin configuration | op |
 | `worldprotect.command.version` | View plugin version | true |
+| `worldprotect.command.cancel` | Cancel current selection | op |
+| `worldprotect.command.here` | Show areas at location | true |
+| `worldprotect.command.circle` | Create circular area | op |
+| `worldprotect.command.selection` | Manage selections | op |
 
 ### Permission Inheritance
 ```
@@ -172,7 +237,11 @@ worldprotect.admin
     ├── worldprotect.command.flag
     ├── worldprotect.command.wand
     ├── worldprotect.command.reload
-    └── worldprotect.command.version
+    ├── worldprotect.command.version
+    ├── worldprotect.command.cancel
+    ├── worldprotect.command.here
+    ├── worldprotect.command.circle
+    └── worldprotect.command.selection
 ```
 
 ## 🎮 Command Examples
@@ -218,5 +287,5 @@ worldprotect.admin
 *Note: This document is auto-generated from the command registry. When new commands are added to the codebase, the documentation will be updated automatically.*
 
 **Last Generated**: 2026-02-17  
-**Command Count**: 10  
-**Permission Nodes**: 12
+**Command Count**: 15  
+**Permission Nodes**: 17

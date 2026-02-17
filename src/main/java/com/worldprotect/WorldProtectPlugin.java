@@ -58,6 +58,9 @@ public class WorldProtectPlugin extends JavaPlugin {
             // Register event listeners
             registerEvents();
             
+            // Start scheduled tasks
+            startScheduledTasks();
+            
             // Initialize API
             initializeAPI();
             
@@ -144,6 +147,18 @@ public class WorldProtectPlugin extends JavaPlugin {
             new com.worldprotect.listener.ProtectionListener(this), this);
         
         getLogger().info("Event listeners registered");
+    }
+    
+    /**
+     * Start scheduled tasks.
+     */
+    private void startScheduledTasks() {
+        // Schedule selection cleanup task (every 5 minutes)
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            selectionManager.cleanupOfflineSelections();
+        }, 20L * 60L * 5L, 20L * 60L * 5L); // 5 minutes
+        
+        getLogger().info("Scheduled tasks started");
     }
     
     /**
