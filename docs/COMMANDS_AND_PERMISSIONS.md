@@ -80,17 +80,19 @@ worldprotect.admin                    # Full administrative access
 ```
 
 ### `/wp flags`
-**Description**: Lists all available flags.
+**Description**: Lists all available flags. Can also be used to set flags: `/wp flags <area> <flag> <value>`.
 
 **Permission**: `worldprotect.command.flags`
 
 **Examples**:
 ```
 /wp flags
+/wp flags spawn pvp false
+/wp flags arena explosions allow
 ```
 
 ### `/wp flag <area> <flag> <value>`
-**Description**: Sets a flag value for an area.
+**Description**: Sets a flag value for an area. (Alias for `/wp flags <area> <flag> <value>`).
 
 **Arguments**:
 - `area`: Name of the area

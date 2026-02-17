@@ -8,10 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project structure and documentation
-- Gradle build system with Paper/Folia support
-- Basic plugin skeleton with placeholder classes
-- Comprehensive documentation framework
+- N/A
 
 ### Changed
 - N/A
@@ -27,6 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - N/A
+
+## [0.1.1] - 2026-02-17
+
+### Fixed
+- `/flags` command now correctly applies flag changes when used with 3 arguments (`/wp flags <area> <flag> <value>`)
+- Previously, `/wp flags area flag value` would only list flags instead of setting them
+- Tab completion now works for both `/wp flags` and `/wp flag` commands
+- Updated command documentation to reflect that `/wp flags` can both list and set flags
 
 ## [1.0.0] - Planned Release
 
