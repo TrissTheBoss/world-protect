@@ -25,6 +25,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - N/A
 
+## [0.1.2] - 2026-02-17
+
+### Added
+- `/wp here` command to show all areas at player's current location
+- `/wp here flags` command to show effective flag values at location
+- Tab completion for area names, flag names, and allow/deny values
+- Improved error messages with suggestions for invalid area/flag names
+
+### Changed
+- **BREAKING**: Flag values now use `allow`/`deny` terminology instead of `true`/`false`
+  - Backward compatible: `true`/`false`, `on`/`off`, `1`/`0` still accepted but displayed as `allow`/`deny`
+  - Updated all documentation to reflect new terminology
+- Selection wand volume calculation now correctly resets when starting new selections
+- Priority system for overlapping areas now fully implemented and documented
+- All shape and style implementations completed (square, circle, triangle, hexagon, full/border)
+
+### Fixed
+- Selection wand volume bug where previous selections affected new ones
+- Flag command parsing to properly handle allow/deny values
+- Documentation alignment with actual implementation
+- Build compilation errors and warnings
+
 ## [0.1.1] - 2026-02-17
 
 ### Fixed

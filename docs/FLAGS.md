@@ -7,9 +7,11 @@ Complete reference for all protection flags available in World Protect.
 Flags are the core protection mechanism in World Protect. Each flag controls a specific aspect of gameplay within a protected region.
 
 ### Flag Value Types
-- **true**: Action is allowed
-- **false**: Action is denied
+- **allow**: Action is allowed
+- **deny**: Action is denied
 - **default**: Use the flag's default value
+
+**Note**: For backward compatibility, `true`/`false`, `on`/`off`, and `1`/`0` are also accepted but will be displayed as `allow`/`deny`.
 
 ### Subject Groups
 Flags can have different values for different subject groups:
@@ -37,38 +39,38 @@ Group flags toggle multiple atomic flags at once:
 ### `block-break`
 **Description**: Controls breaking of blocks.
 
-**Values**: true, false, default  
-**Default**: true  
+**Values**: allow, deny, default  
+**Default**: allow  
 **Category**: Blocks & Containers  
 **Events**: BlockBreakEvent
 
 **Examples**:
 ```bash
-/wp flags spawn block-break false
-/wp flags build_area block-break true
+/wp flags spawn block-break deny
+/wp flags build_area block-break allow
 ```
 
 ### `block-place`
 **Description**: Controls placing of blocks.
 
-**Values**: true, false, default  
-**Default**: true  
+**Values**: allow, deny, default  
+**Default**: allow  
 **Category**: Blocks & Containers  
 **Events**: BlockPlaceEvent
 
 ### `use`
 **Description**: Controls use of doors, buttons, levers, etc.
 
-**Values**: true, false, default  
-**Default**: true  
+**Values**: allow, deny, default  
+**Default**: allow  
 **Category**: Blocks & Containers  
 **Events**: PlayerInteractEvent
 
 ### `container-access`
 **Description**: Controls access to containers (chests, furnaces, etc.).
 
-**Values**: true, false, default  
-**Default**: true  
+**Values**: allow, deny, default  
+**Default**: allow  
 **Category**: Blocks & Containers  
 **Events**: InventoryOpenEvent
 
@@ -77,15 +79,15 @@ Group flags toggle multiple atomic flags at once:
 ### `pvp`
 **Description**: Controls player vs player combat.
 
-**Values**: true, false, default  
-**Default**: false  
+**Values**: allow, deny, default  
+**Default**: deny  
 **Category**: Player Combat  
 **Events**: EntityDamageByEntityEvent
 
 **Examples**:
 ```bash
-/wp flags arena pvp true
-/wp flags spawn pvp false
+/wp flags arena pvp allow
+/wp flags spawn pvp deny
 ```
 
 ## 🧟 Mob & Entity Flags
@@ -93,8 +95,8 @@ Group flags toggle multiple atomic flags at once:
 ### `mob-damage-players`
 **Description**: Controls whether mobs can damage players.
 
-**Values**: true, false, default  
-**Default**: true  
+**Values**: allow, deny, default  
+**Default**: allow  
 **Category**: Mobs & Entities  
 **Events**: EntityDamageByEntityEvent
 

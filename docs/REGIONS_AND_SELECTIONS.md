@@ -116,6 +116,23 @@ Before creation, World Protect validates:
 /wp delete old_area
 ```
 
+### Location-Based Area Inspection
+```bash
+# Show all areas at your current location
+/wp here
+
+# Show effective flag values at your location
+/wp here flags
+
+# Example output:
+# === Areas at your location ===
+# Location: (100, 64, 200) in world
+# ✓ spawn - Priority: 1, Shape: SQUARE, Style: FULL (Effective)
+#   arena - Priority: 5, Shape: CIRCLE, Style: BORDER
+# 
+# Multiple areas overlap. Highest priority area (spawn) determines effective flags.
+```
+
 ## 🔄 Area Overlaps and Priority
 
 ### Priority System

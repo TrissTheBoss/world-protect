@@ -87,7 +87,7 @@ worldprotect.admin                    # Full administrative access
 **Examples**:
 ```
 /wp flags
-/wp flags spawn pvp false
+/wp flags spawn pvp deny
 /wp flags arena explosions allow
 ```
 
@@ -103,7 +103,7 @@ worldprotect.admin                    # Full administrative access
 
 **Examples**:
 ```
-/wp flag spawn pvp false
+/wp flag spawn pvp deny
 /wp flag arena explosions allow
 ```
 
