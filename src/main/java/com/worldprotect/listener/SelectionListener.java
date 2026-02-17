@@ -65,7 +65,7 @@ public class SelectionListener implements Listener {
         // Get or create selection
         Selection selection = plugin.getSelectionManager().getSelection(player);
         if (selection == null) {
-            // Start new selection
+            // Start new selection - default to POINT_BASED for backward compatibility
             selection = plugin.getSelectionManager().startSelection(
                 player, "temp", player.getWorld(), Selection.SelectionType.POINT_BASED);
             
@@ -74,15 +74,22 @@ public class SelectionListener implements Listener {
                 return;
             }
             
-            player.sendMessage("§aSelection started! Left-click to set point 1, right-click to set point 2.");
-            player.sendMessage("§7Shift + Right-click: Remove last point");
+            if (selection.getType() == Selection.SelectionType.POINT_BASED) {
+                player.sendMessage("§aSelection started! Left-click to set point 1, right-click to set point 2.");
+                player.sendMessage("§7Shift + Right-click: Remove last point");
+            } else {
+                player.sendMessage("§aPolygon selection started! Click to add points.");
+                player.sendMessage("§7Minimum 3 points required. Use /wp selection finish to complete.");
+                player.sendMessage("§7Shift + Right-click: Remove last point");
+            }
         } else {
-            // If selection already exists and is complete, ask player to cancel or continue
-            if (selection.isComplete()) {
+            // For POINT_BASED selections, check if complete and prevent adding more points
+            if (selection.getType() == Selection.SelectionType.POINT_BASED && selection.isComplete()) {
                 player.sendMessage("§eYou already have a complete selection.");
                 player.sendMessage("§7Use /wp create <name> to create an area, or /wp cancel to start over.");
                 return;
             }
+            // For FREE_DRAW selections, always allow adding more points
         }
         
         // Add point based on action
@@ -90,11 +97,35 @@ public class SelectionListener implements Listener {
             if (plugin.getSelectionManager().addPoint(player, event.getClickedBlock().getLocation())) {
                 int pointCount = plugin.getSelectionManager().getPointCount(player);
                 player.sendMessage("§aPoint " + pointCount + " set at " + formatLocation(event.getClickedBlock().getLocation()));
+                
+                // Check if maximum points reached for FREE_DRAW selection
+                Selection sel = plugin.getSelectionManager().getSelection(player);
+                if (sel != null && sel.getType() == Selection.SelectionType.FREE_DRAW && pointCount >= 360) {
+                    player.sendMessage("§eMaximum polygon points (360) reached. Use /wp selection finish to complete.");
+                }
+            } else {
+                // Check if failed due to maximum points
+                Selection sel = plugin.getSelectionManager().getSelection(player);
+                if (sel != null && sel.getType() == Selection.SelectionType.FREE_DRAW && sel.getPointCount() >= 360) {
+                    player.sendMessage("§cMaximum polygon points (360) reached. Use /wp selection finish to complete.");
+                }
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null) {
             if (plugin.getSelectionManager().addPoint(player, event.getClickedBlock().getLocation())) {
                 int pointCount = plugin.getSelectionManager().getPointCount(player);
                 player.sendMessage("§aPoint " + pointCount + " set at " + formatLocation(event.getClickedBlock().getLocation()));
+                
+                // Check if maximum points reached for FREE_DRAW selection
+                Selection sel = plugin.getSelectionManager().getSelection(player);
+                if (sel != null && sel.getType() == Selection.SelectionType.FREE_DRAW && pointCount >= 360) {
+                    player.sendMessage("§eMaximum polygon points (360) reached. Use /wp selection finish to complete.");
+                }
+            } else {
+                // Check if failed due to maximum points
+                Selection sel = plugin.getSelectionManager().getSelection(player);
+                if (sel != null && sel.getType() == Selection.SelectionType.FREE_DRAW && sel.getPointCount() >= 360) {
+                    player.sendMessage("§cMaximum polygon points (360) reached. Use /wp selection finish to complete.");
+                }
             }
         }
         

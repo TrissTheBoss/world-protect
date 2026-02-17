@@ -87,7 +87,7 @@ public class WorldProtectCommand extends BaseCommand {
                     completions.addAll(Arrays.asList("flags", "visualize"));
                     break;
                 case "selection":
-                    completions.addAll(Arrays.asList("new", "clear", "cancel", "info", "mode"));
+                    completions.addAll(Arrays.asList("new", "clear", "cancel", "info", "mode", "finish"));
                     break;
             }
         } else if (args.length == 3) {
@@ -135,7 +135,8 @@ public class WorldProtectCommand extends BaseCommand {
         sendMessage(sender, "§6/wp cancel §7- Cancel current selection");
         sendMessage(sender, "§6/wp selection new <name> §7- Start a new selection");
         sendMessage(sender, "§6/wp selection info §7- Show selection information");
-        sendMessage(sender, "§6/wp selection mode <draw|wand> §7- Switch selection mode");
+        sendMessage(sender, "§6/wp selection mode <wand|draw|points> §7- Switch selection mode");
+        sendMessage(sender, "§6/wp selection finish §7- Complete polygon selection (draw/points mode)");
         sendMessage(sender, "§6/wp here §7- Show areas at your location");
         sendMessage(sender, "§6/wp here flags §7- Show effective flags at your location");
         sendMessage(sender, "§6/wp here visualize §7- Visualize area boundaries");
@@ -171,13 +172,24 @@ public class WorldProtectCommand extends BaseCommand {
             return true;
         }
         
-        // Default values
-        Area.Shape shape = Area.Shape.SQUARE;
+        // Default values - auto-detect shape based on selection
+        Area.Shape shape;
+        if (selection.getType() == com.worldprotect.selection.Selection.SelectionType.FREE_DRAW && selection.getPointCount() >= 3) {
+            // FREE_DRAW selection with 3+ points should be POLYGON
+            shape = Area.Shape.POLYGON;
+        } else if (selection.getPointCount() == 2) {
+            // 2 points = SQUARE (rectangular area)
+            shape = Area.Shape.SQUARE;
+        } else {
+            // Default to SQUARE
+            shape = Area.Shape.SQUARE;
+        }
+        
         Area.Style style = Area.Style.FULL;
         int borderThickness = 1;
         int priority = 10;
         
-        // Parse optional arguments
+        // Parse optional arguments (allow overriding auto-detected shape)
         if (args.length >= 3) {
             try {
                 shape = Area.Shape.valueOf(args[2].toUpperCase());
@@ -702,11 +714,12 @@ public class WorldProtectCommand extends BaseCommand {
         }
         
         if (args.length < 2) {
-            sendError(sender, "Usage: /wp selection <new|clear|info|mode> [name]");
+            sendError(sender, "Usage: /wp selection <new|clear|info|mode|finish> [name]");
             sendError(sender, "  new <name> - Start a new selection with given name");
-            sendError(sender, "  clear - Clear current selection");
+            sendError(sender, "  clear/cancel - Clear current selection");
             sendError(sender, "  info - Show selection information");
-            sendError(sender, "  mode <draw|wand> - Switch selection mode");
+            sendError(sender, "  mode <wand|draw|points> - Switch selection mode");
+            sendError(sender, "  finish - Complete polygon selection (draw/points mode only)");
             return true;
         }
         
@@ -722,8 +735,10 @@ public class WorldProtectCommand extends BaseCommand {
                 return selectionInfo(player);
             case "mode":
                 return selectionMode(player, args);
+            case "finish":
+                return finishSelection(player);
             default:
-                sendError(sender, "Unknown selection action. Use: new, clear, info, or mode");
+                sendError(sender, "Unknown selection action. Use: new, clear, info, mode, or finish");
                 return true;
         }
     }
@@ -783,9 +798,9 @@ public class WorldProtectCommand extends BaseCommand {
     
     private boolean selectionMode(@NotNull Player player, @NotNull String[] args) {
         if (args.length < 3) {
-            sendError(player, "Usage: /wp selection mode <draw|wand>");
-            sendError(player, "  draw - Free-draw polygon selection (unlimited points)");
+            sendError(player, "Usage: /wp selection mode <wand|draw|points>");
             sendError(player, "  wand - Classic two-point rectangular selection");
+            sendError(player, "  draw/points - Multi-point polygon selection (unlimited points)");
             return true;
         }
         
@@ -794,13 +809,14 @@ public class WorldProtectCommand extends BaseCommand {
         
         switch (mode) {
             case "draw":
+            case "points":
                 type = com.worldprotect.selection.Selection.SelectionType.FREE_DRAW;
                 break;
             case "wand":
                 type = com.worldprotect.selection.Selection.SelectionType.POINT_BASED;
                 break;
             default:
-                sendError(player, "Invalid mode. Use: draw or wand");
+                sendError(player, "Invalid mode. Use: wand, draw, or points");
                 return true;
         }
         
@@ -832,6 +848,36 @@ public class WorldProtectCommand extends BaseCommand {
             sendInfo(player, "Use left-click for point 1, right-click for point 2.");
         }
         return true;
+    }
+    
+    private boolean finishSelection(@NotNull Player player) {
+        var selection = plugin.getSelectionManager().getSelection(player);
+        if (selection == null) {
+            sendError(player, "You don't have an active selection.");
+            return true;
+        }
+        
+        if (selection.getType() != com.worldprotect.selection.Selection.SelectionType.FREE_DRAW) {
+            sendError(player, "The finish command is only for polygon (draw/points) selections.");
+            sendInfo(player, "Use /wp selection mode draw to switch to polygon selection mode.");
+            return true;
+        }
+        
+        if (selection.getPointCount() < 3) {
+            sendError(player, "Polygon selection requires at least 3 points.");
+            sendInfo(player, "You have " + selection.getPointCount() + " points. Add more points with the selection wand.");
+            return true;
+        }
+        
+        if (plugin.getSelectionManager().finishSelection(player)) {
+            sendSuccess(player, "Polygon selection completed!");
+            sendInfo(player, "Points: " + selection.getPointCount());
+            sendInfo(player, "Use /wp create <name> to create a polygon area.");
+            return true;
+        } else {
+            sendError(player, "Failed to complete selection.");
+            return true;
+        }
     }
     
     private boolean createCircleArea(@NotNull CommandSender sender, @NotNull String[] args) {

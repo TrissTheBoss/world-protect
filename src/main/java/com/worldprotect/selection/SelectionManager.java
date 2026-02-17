@@ -120,6 +120,25 @@ public class SelectionManager {
     }
     
     /**
+     * Manually complete a FREE_DRAW selection.
+     * @param player the player
+     * @return true if selection was completed, false if player has no selection or selection cannot be completed
+     */
+    public boolean finishSelection(@NotNull Player player) {
+        Selection selection = getSelection(player);
+        if (selection == null) {
+            return false;
+        }
+        
+        if (selection.canBeCompleted()) {
+            selection.setComplete();
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Cancel the player's selection.
      * @param player the player
      * @return the cancelled selection, or null if player has no selection

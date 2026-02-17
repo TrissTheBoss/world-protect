@@ -143,10 +143,14 @@ public class Selection implements ConfigurationSerializable {
     /**
      * Add a point to the selection.
      * @param location the location to add
-     * @return true if added, false if world doesn't match
+     * @return true if added, false if world doesn't match or maximum points reached
      */
     public boolean addPoint(@NotNull Location location) {
         if (!location.getWorld().getName().equals(worldName)) {
+            return false;
+        }
+        // Maximum 360 points for polygon selections to prevent abuse
+        if (type == SelectionType.FREE_DRAW && points.size() >= 360) {
             return false;
         }
         points.add(location.clone());
@@ -180,19 +184,42 @@ public class Selection implements ConfigurationSerializable {
         return points.size();
     }
     
+    private boolean manuallyCompleted = false;
+    
     /**
      * Check if the selection is complete (has enough points for its type).
      * @return true if complete
      */
     public boolean isComplete() {
+        if (manuallyCompleted) {
+            return true;
+        }
         switch (type) {
             case POINT_BASED:
                 return points.size() >= 2; // Need at least 2 points for area
             case FREE_DRAW:
-                return points.size() >= 3; // Need at least 3 points for polygon
+                return false; // FREE_DRAW selections require manual completion via finish command
             default:
                 return false;
         }
+    }
+    
+    /**
+     * Manually mark this selection as complete.
+     * Used for FREE_DRAW selections that require explicit completion.
+     */
+    public void setComplete() {
+        if (type == SelectionType.FREE_DRAW && points.size() >= 3) {
+            manuallyCompleted = true;
+        }
+    }
+    
+    /**
+     * Check if selection can be manually completed (has enough points).
+     * @return true if can be completed
+     */
+    public boolean canBeCompleted() {
+        return type == SelectionType.FREE_DRAW && points.size() >= 3;
     }
     
     /**

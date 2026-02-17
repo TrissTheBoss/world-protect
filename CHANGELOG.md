@@ -8,22 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- N/A
+- `/wp selection finish` command for completing polygon selections
+- "points" as an alias for "draw" mode in `/wp selection mode` command
+- Maximum point limit of 360 for polygon selections to prevent abuse
 
 ### Changed
-- N/A
-
-### Deprecated
-- N/A
-
-### Removed
-- N/A
+- Polygon selection now allows unlimited points (previously limited to 3)
+- Areas created from multi-point selections now automatically detect POLYGON shape
+- Updated tab completion for `/wp selection mode` with options: wand, draw, points
+- Enhanced selection messages for polygon mode
 
 ### Fixed
-- N/A
-
-### Security
-- N/A
+- **Point limit bug**: Selection system now allows unlimited points in draw/polygon mode
+- **Shape recognition bug**: Areas created from multi-point selections now correctly show as POLYGON shape instead of SQUARE
+- **Command syntax**: `/wp selection mode` now suggests `draw` and `points` as valid options in tab completion
+- Selection completion logic for FREE_DRAW mode now requires manual `/wp selection finish` command
 
 ## [0.2.0] - 2026-02-17
 

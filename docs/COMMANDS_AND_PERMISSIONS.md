@@ -198,6 +198,34 @@ worldprotect.admin                    # Full administrative access
 /wp selection info
 ```
 
+### `/wp selection mode <wand|draw|points>`
+**Description**: Switches the selection mode.
+
+**Arguments**:
+- `wand`: Classic two-point rectangular selection
+- `draw` or `points`: Multi-point polygon selection (unlimited points)
+
+**Permission**: `worldprotect.command.selection.mode`
+
+**Examples**:
+```
+/wp selection mode wand
+/wp selection mode draw
+/wp selection mode points
+```
+
+### `/wp selection finish`
+**Description**: Completes the current polygon selection (draw/points mode only).
+
+**Requirement**: At least 3 points must be selected
+
+**Permission**: `worldprotect.command.selection.finish`
+
+**Examples**:
+```
+/wp selection finish
+```
+
 ## 🔐 Permission Reference
 
 ### Administrative Permissions

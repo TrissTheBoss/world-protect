@@ -38,14 +38,16 @@ World Protect supports two selection modes:
    - Left-click adds a point
    - Right-click adds another point
    - Need at least 2 points for basic area
+   - Selection automatically completes after 2 points
    - Switch to this mode: `/wp selection mode wand`
 
-2. **Free-Draw Selection (Draw Mode)**: Create polygon with unlimited points
-   - Left-click to add points at clicked blocks
-   - Unlimited points (minimum 3 for valid polygon)
+2. **Free-Draw Selection (Draw/Points Mode)**: Create polygon with unlimited points
+   - Left-click or right-click to add points at clicked blocks
+   - Unlimited points (minimum 3 for valid polygon, maximum 360)
    - Polygon automatically closes (last point connects to first)
    - Real-time particle visualization of polygon edges
-   - Switch to this mode: `/wp selection mode draw`
+   - Must manually complete with `/wp selection finish` command
+   - Switch to this mode: `/wp selection mode draw` or `/wp selection mode points`
 
 ### Selection Wand
 The selection wand is the primary tool for defining area boundaries.
