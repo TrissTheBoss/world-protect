@@ -25,6 +25,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - N/A
 
+## [0.2.0] - 2026-02-17
+
+### Added
+- **Draw-mode polygon selection** with unlimited points and automatic closing
+- **Polygon shape** for areas with advanced computational geometry
+- **Point-in-polygon algorithm** using ray-casting for accurate containment checks
+- **Distance-to-boundary algorithm** for polygon BORDER style with accurate border zones
+- **Selection mode switching**: `/wp selection mode draw` and `/wp selection mode wand`
+- **Real-time particle visualization** of polygon edges during selection
+- **PolygonGeometry utility class** with robust geometry algorithms
+- **Enhanced area creation** with shape, style, border thickness, and priority parameters
+- **Updated documentation** with comprehensive polygon selection guide
+
+### Changed
+- **Enhanced `/wp create` command** to accept shape, style, border, and priority parameters
+- **Updated selection system** to support both wand mode (2-point) and draw mode (unlimited points)
+- **Improved geometry utilities** with polygon-specific calculations
+- **Enhanced area validation** for polygon shapes (minimum 3 points required)
+- **Updated all documentation** to reflect new polygon features
+
+### Fixed
+- **Geometry calculations** for all shape types
+- **Area serialization** to properly save polygon points
+- **Command validation** for polygon shape requirements
+
 ## [0.1.3] - 2026-02-17
 
 ### Added

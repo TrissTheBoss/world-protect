@@ -23,6 +23,7 @@ An **area** is a protected 3D volume in a Minecraft world with defined boundarie
 2. **CIRCLE**: Circular area with center and radius
 3. **TRIANGLE**: Triangular area defined by three points
 4. **HEXAGON**: Hexagonal area (regular polygon)
+5. **POLYGON**: Free-draw polygon area with unlimited points
 
 ### Area Styles
 1. **FULL**: Entire shape volume is protected
@@ -33,15 +34,18 @@ An **area** is a protected 3D volume in a Minecraft world with defined boundarie
 ### Selection Types
 World Protect supports two selection modes:
 
-1. **Point-Based Selection**: Using a wand with left/right clicks
+1. **Point-Based Selection (Wand Mode)**: Using a wand with left/right clicks
    - Left-click adds a point
    - Right-click adds another point
    - Need at least 2 points for basic area
+   - Switch to this mode: `/wp selection mode wand`
 
-2. **Free-Draw Selection**: Player movement creates polygon
-   - Player moves to trace area boundaries
-   - Points added at intervals during movement
-   - Need at least 3 points for polygon
+2. **Free-Draw Selection (Draw Mode)**: Create polygon with unlimited points
+   - Left-click to add points at clicked blocks
+   - Unlimited points (minimum 3 for valid polygon)
+   - Polygon automatically closes (last point connects to first)
+   - Real-time particle visualization of polygon edges
+   - Switch to this mode: `/wp selection mode draw`
 
 ### Selection Wand
 The selection wand is the primary tool for defining area boundaries.
@@ -198,12 +202,22 @@ Areas support multiple geometric shapes:
 - **CIRCLE**: Circular protection zones
 - **TRIANGLE**: Triangular areas for complex layouts
 - **HEXAGON**: Hexagonal areas for grid-based systems
+- **POLYGON**: Free-draw polygons with unlimited points
+
+### Polygon Geometry
+Polygon areas use advanced computational geometry:
+- **Point-in-Polygon**: Ray-casting algorithm for accurate containment checks
+- **Distance-to-Boundary**: Calculates distance to nearest polygon edge for BORDER style
+- **Automatic Closing**: Last point automatically connects to first point
+- **Unlimited Points**: No hard limit (soft maximum of 360 for performance)
+- **2D Projection**: Polygon defined in XZ plane, full Y height
 
 ### Border Style
 BORDER style creates protected borders only:
 - **Border Thickness**: Configurable width of protected border
 - **Interior Access**: Players can access interior freely
 - **Perimeter Protection**: Only border area is protected
+- **Polygon Borders**: Distance-to-edge calculation for accurate border zones
 
 ### Group Flags
 Toggle multiple flags at once with group flags:
@@ -270,7 +284,7 @@ Toggle multiple flags at once with group flags:
 *Note: This document is auto-generated from the Area and Selection classes. When new features are added, the documentation will be updated automatically.*
 
 **Last Generated**: 2026-02-17  
-**Area Shapes**: 4  
+**Area Shapes**: 5  
 **Area Styles**: 2  
 **Selection Modes**: 2
 

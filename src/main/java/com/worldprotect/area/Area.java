@@ -27,9 +27,10 @@ public class Area implements ConfigurationSerializable {
     private final Map<GroupFlag, Map<FlagResolver.SubjectGroup, Boolean>> groupFlagValues;
     private final Location minBounds;
     private final Location maxBounds;
+    private final List<Location> polygonPoints; // For POLYGON shape only
     private final long createdAt;
     
-    public enum Shape { SQUARE, CIRCLE, TRIANGLE, HEXAGON }
+    public enum Shape { SQUARE, CIRCLE, TRIANGLE, HEXAGON, POLYGON }
     public enum Style { FULL, BORDER }
     
     public Area(@NotNull String name, @NotNull Selection selection, int priority,
@@ -45,6 +46,16 @@ public class Area implements ConfigurationSerializable {
         this.members = new HashSet<>();
         this.flagValues = new HashMap<>();
         this.groupFlagValues = new HashMap<>();
+        
+        // Copy polygon points from selection if this is a polygon shape
+        if (shape == Shape.POLYGON) {
+            this.polygonPoints = new ArrayList<>();
+            for (Location point : selection.getPoints()) {
+                this.polygonPoints.add(point.clone());
+            }
+        } else {
+            this.polygonPoints = new ArrayList<>();
+        }
         
         Location min = selection.getMinBounds();
         Location max = selection.getMaxBounds();
@@ -122,6 +133,22 @@ public class Area implements ConfigurationSerializable {
             }
         }
         
+        // Initialize polygon points (load from data if available)
+        this.polygonPoints = new ArrayList<>();
+        List<Map<String, Object>> polygonData = (List<Map<String, Object>>) data.get("polygonPoints");
+        if (polygonData != null) {
+            World world = Bukkit.getWorld(worldName);
+            if (world != null) {
+                for (Map<String, Object> pointData : polygonData) {
+                    Location point = new Location(world,
+                        ((Number) pointData.get("x")).doubleValue(),
+                        ((Number) pointData.get("y")).doubleValue(),
+                        ((Number) pointData.get("z")).doubleValue());
+                    polygonPoints.add(point);
+                }
+            }
+        }
+        
         Map<String, Object> minData = (Map<String, Object>) data.get("minBounds");
         Map<String, Object> maxData = (Map<String, Object>) data.get("maxBounds");
         World world = Bukkit.getWorld(worldName);
@@ -152,6 +179,7 @@ public class Area implements ConfigurationSerializable {
     public long getCreatedAt() { return createdAt; }
     @NotNull public Location getMinBounds() { return minBounds.clone(); }
     @NotNull public Location getMaxBounds() { return maxBounds.clone(); }
+    @NotNull public List<Location> getPolygonPoints() { return Collections.unmodifiableList(polygonPoints); }
     
     @NotNull
     public Location getCenter() {
@@ -300,6 +328,19 @@ public class Area implements ConfigurationSerializable {
         maxData.put("y", maxBounds.getY());
         maxData.put("z", maxBounds.getZ());
         data.put("maxBounds", maxData);
+        
+        // Save polygon points if this is a polygon shape
+        if (shape == Shape.POLYGON && !polygonPoints.isEmpty()) {
+            List<Map<String, Object>> polygonData = new ArrayList<>();
+            for (Location point : polygonPoints) {
+                Map<String, Object> pointData = new HashMap<>();
+                pointData.put("x", point.getX());
+                pointData.put("y", point.getY());
+                pointData.put("z", point.getZ());
+                polygonData.add(pointData);
+            }
+            data.put("polygonPoints", polygonData);
+        }
         
         return data;
     }

@@ -51,6 +51,9 @@ public class GeometryUtils {
             case HEXAGON:
                 inShape = isInHexagon(location, min, max);
                 break;
+            case POLYGON:
+                inShape = isInPolygon(location, area);
+                break;
         }
         
         if (!inShape) {
@@ -62,7 +65,7 @@ public class GeometryUtils {
             case FULL:
                 return true;
             case BORDER:
-                return isInBorder(location, min, max, area.getBorderThickness(), area.getShape());
+                return isInBorder(location, min, max, area.getBorderThickness(), area.getShape(), area);
             default:
                 return true;
         }
@@ -143,10 +146,33 @@ public class GeometryUtils {
     }
     
     /**
+     * Check if location is within a polygon.
+     * Uses the ray-casting algorithm for point-in-polygon testing.
+     */
+    private static boolean isInPolygon(Location location, Area area) {
+        List<Location> polygonPoints = area.getPolygonPoints();
+        if (polygonPoints.size() < 3) {
+            // Not enough points for a valid polygon, fall back to AABB
+            return true;
+        }
+        
+        // Convert to 2D points for polygon check
+        List<com.worldprotect.util.PolygonGeometry.Point2D> polygon2D = new ArrayList<>();
+        for (Location point : polygonPoints) {
+            polygon2D.add(new com.worldprotect.util.PolygonGeometry.Point2D(point));
+        }
+        
+        com.worldprotect.util.PolygonGeometry.Point2D testPoint = 
+            new com.worldprotect.util.PolygonGeometry.Point2D(location);
+        
+        return com.worldprotect.util.PolygonGeometry.isPointInPolygon(testPoint, polygon2D);
+    }
+    
+    /**
      * Check if location is within the border of a shape.
      */
     private static boolean isInBorder(Location location, Location min, Location max, 
-                                     int borderThickness, Area.Shape shape) {
+                                     int borderThickness, Area.Shape shape, Area area) {
         // For border style, we need to check if point is near the edge of the actual shape
         double x = location.getX();
         double y = location.getY();
@@ -218,6 +244,36 @@ public class GeometryUtils {
                 
                 // Hexagon border is approximately circular
                 return Math.abs(hexDistance - hexRadius) <= borderThickness;
+                
+            case POLYGON:
+                // For polygon, calculate distance to polygon boundary
+                List<Location> polygonPoints = area.getPolygonPoints();
+                if (polygonPoints.size() < 3) {
+                    // Not enough points for a valid polygon, fall back to AABB check
+                    double distToMinXPoly = Math.abs(x - min.getX());
+                    double distToMaxXPoly = Math.abs(x - max.getX());
+                    double distToMinZPoly = Math.abs(z - min.getZ());
+                    double distToMaxZPoly = Math.abs(z - max.getZ());
+                    
+                    double minDistToEdgePoly = Math.min(
+                        Math.min(distToMinXPoly, distToMaxXPoly),
+                        Math.min(distToMinZPoly, distToMaxZPoly)
+                    );
+                    
+                    return minDistToEdgePoly <= borderThickness;
+                }
+                
+                // Convert to 2D points for polygon distance calculation
+                List<com.worldprotect.util.PolygonGeometry.Point2D> polygon2D = new ArrayList<>();
+                for (Location polyPoint : polygonPoints) {
+                    polygon2D.add(new com.worldprotect.util.PolygonGeometry.Point2D(polyPoint));
+                }
+                
+                com.worldprotect.util.PolygonGeometry.Point2D testPoint = 
+                    new com.worldprotect.util.PolygonGeometry.Point2D(location);
+                
+                double distanceToBoundary = com.worldprotect.util.PolygonGeometry.distanceToPolygonBoundary(testPoint, polygon2D);
+                return distanceToBoundary <= borderThickness;
                 
             default:
                 // Fallback to AABB check
