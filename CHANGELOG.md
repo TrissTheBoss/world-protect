@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Shape recognition bug**: Areas created from multi-point selections now correctly show as POLYGON shape instead of SQUARE
 - **Command syntax**: `/wp selection mode` now suggests `draw` and `points` as valid options in tab completion
 - Selection completion logic for FREE_DRAW mode now requires manual `/wp selection finish` command
+- **Polygon boundary offset bug**: Polygon areas now protect the exact blocks you select, not one block inward
+  - Selection points now use block center coordinates (e.g., block at (10, 64, 20) stores point (10.5, 64, 20.5))
+  - Point-in-polygon algorithm uses consistent coordinate system for accurate boundary checks
+  - Backward compatible: Existing polygon areas with integer coordinates are automatically converted to block centers
+  - AABB bounds adjusted to account for block center coordinates
 
 ## [0.2.0] - 2026-02-17
 

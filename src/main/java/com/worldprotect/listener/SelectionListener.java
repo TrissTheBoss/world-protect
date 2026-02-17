@@ -2,6 +2,7 @@ package com.worldprotect.listener;
 
 import com.worldprotect.WorldProtectPlugin;
 import com.worldprotect.selection.Selection;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -94,7 +95,16 @@ public class SelectionListener implements Listener {
         
         // Add point based on action
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getClickedBlock() != null) {
-            if (plugin.getSelectionManager().addPoint(player, event.getClickedBlock().getLocation())) {
+            // Store block center coordinates for consistent polygon boundaries
+            Location blockLocation = event.getClickedBlock().getLocation();
+            Location centerLocation = new Location(
+                blockLocation.getWorld(),
+                blockLocation.getBlockX() + 0.5,
+                blockLocation.getBlockY(),
+                blockLocation.getBlockZ() + 0.5
+            );
+            
+            if (plugin.getSelectionManager().addPoint(player, centerLocation)) {
                 int pointCount = plugin.getSelectionManager().getPointCount(player);
                 player.sendMessage("§aPoint " + pointCount + " set at " + formatLocation(event.getClickedBlock().getLocation()));
                 
@@ -111,7 +121,16 @@ public class SelectionListener implements Listener {
                 }
             }
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null) {
-            if (plugin.getSelectionManager().addPoint(player, event.getClickedBlock().getLocation())) {
+            // Store block center coordinates for consistent polygon boundaries
+            Location blockLocation = event.getClickedBlock().getLocation();
+            Location centerLocation = new Location(
+                blockLocation.getWorld(),
+                blockLocation.getBlockX() + 0.5,
+                blockLocation.getBlockY(),
+                blockLocation.getBlockZ() + 0.5
+            );
+            
+            if (plugin.getSelectionManager().addPoint(player, centerLocation)) {
                 int pointCount = plugin.getSelectionManager().getPointCount(player);
                 player.sendMessage("§aPoint " + pointCount + " set at " + formatLocation(event.getClickedBlock().getLocation()));
                 

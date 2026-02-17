@@ -243,7 +243,9 @@ public class Selection implements ConfigurationSerializable {
             minZ = Math.min(minZ, point.getZ());
         }
         
-        return new Location(first.getWorld(), minX, minY, minZ);
+        // Adjust for block center coordinates: subtract 0.5 to get block boundaries
+        // This ensures AABB checks work correctly with block-centered polygon points
+        return new Location(first.getWorld(), minX - 0.5, minY, minZ - 0.5);
     }
     
     /**
@@ -267,7 +269,9 @@ public class Selection implements ConfigurationSerializable {
             maxZ = Math.max(maxZ, point.getZ());
         }
         
-        return new Location(first.getWorld(), maxX, maxY, maxZ);
+        // Adjust for block center coordinates: add 0.5 to get block boundaries
+        // This ensures AABB checks work correctly with block-centered polygon points
+        return new Location(first.getWorld(), maxX + 0.5, maxY, maxZ + 0.5);
     }
     
     /**

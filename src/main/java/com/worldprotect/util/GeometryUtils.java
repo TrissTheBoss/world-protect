@@ -162,8 +162,14 @@ public class GeometryUtils {
             polygon2D.add(new com.worldprotect.util.PolygonGeometry.Point2D(point));
         }
         
+        // Use block center coordinates for consistent boundary checks
+        // This ensures that when a player clicks a block at (10, 64, 20),
+        // the polygon boundary passes through the center of that block (10.5, 64, 20.5)
         com.worldprotect.util.PolygonGeometry.Point2D testPoint = 
-            new com.worldprotect.util.PolygonGeometry.Point2D(location);
+            new com.worldprotect.util.PolygonGeometry.Point2D(
+                location.getBlockX() + 0.5,
+                location.getBlockZ() + 0.5
+            );
         
         return com.worldprotect.util.PolygonGeometry.isPointInPolygon(testPoint, polygon2D);
     }
@@ -269,8 +275,12 @@ public class GeometryUtils {
                     polygon2D.add(new com.worldprotect.util.PolygonGeometry.Point2D(polyPoint));
                 }
                 
+                // Use block center coordinates for consistent boundary checks
                 com.worldprotect.util.PolygonGeometry.Point2D testPoint = 
-                    new com.worldprotect.util.PolygonGeometry.Point2D(location);
+                    new com.worldprotect.util.PolygonGeometry.Point2D(
+                        location.getBlockX() + 0.5,
+                        location.getBlockZ() + 0.5
+                    );
                 
                 double distanceToBoundary = com.worldprotect.util.PolygonGeometry.distanceToPolygonBoundary(testPoint, polygon2D);
                 return distanceToBoundary <= borderThickness;

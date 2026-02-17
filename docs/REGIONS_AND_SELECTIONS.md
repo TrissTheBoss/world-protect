@@ -213,6 +213,7 @@ Polygon areas use advanced computational geometry:
 - **Automatic Closing**: Last point automatically connects to first point
 - **Unlimited Points**: No hard limit (soft maximum of 360 for performance)
 - **2D Projection**: Polygon defined in XZ plane, full Y height
+- **Coordinate System**: Polygon points use block center coordinates (e.g., block at (10, 64, 20) stores point (10.5, 64, 20.5)) for consistent boundary alignment
 
 ### Border Style
 BORDER style creates protected borders only:
